@@ -32,5 +32,6 @@ class PhonemeMap:
                     matched = True
                     break
             if not matched:
-                raise ValueError(f"Unrecognized phoneme sequence at position {i}: '{phoneme[i:]}'")
+                print(f"Unrecognized phoneme sequence at position {i}: '{phoneme[i:]}'")
+                i += 1
         return ''.join(result)

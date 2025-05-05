@@ -89,8 +89,9 @@ if __name__ == "__main__":
     # warnings.filterwarnings("ignore",
     #                         message="Implicitly cleaning up <TemporaryDirectory*",
     #                         category=ResourceWarning)
+
     loader = Loader(it_fraction=0.9, es_fraction=0.9)
-    dataset = loader.load()
+    dataset = loader.load(20)
 
     print(f"Train size: {len(dataset['train'])}")
     print(f"Sample: {dataset['train'][0]['sentence']}")

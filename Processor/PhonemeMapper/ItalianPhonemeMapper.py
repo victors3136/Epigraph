@@ -1,12 +1,43 @@
 class ItalianPhonemeMapper:
     __It2Ro = {
         # vowels
-        "a": "a", "e": "e", "ɛ": "e", "i": "i", "o": "o", "ɔ": "o", "u": "u",
+        "a": "a",
+        "e": "e",
+        "ɛ": "e",
+        "i": "i",
+        "o": "o",
+        "ɔ": "o",
+        "u": "u",
         # consonants
-        "b": "b", "d": "d", "t": "t", "k": "k", "g": "ɡ", "p": "p", "f": "f", "v": "v",
-        "s": "s", "z": "z", "m": "m", "n": "n", "ɲ": "nj", "ʎ": "lj", "l": "l", "ɡ": "ɡ",
-        "r": "r", "ɾ": "r", "tʃ": "tʃ", "dʒ": "dʒ", "ts": "ts", "dz": "ts",
-        "w": "u", "j": "j", "ʃ": "ʃ"
+        "b": "b",
+        "d": "d",
+        "t": "t",
+        "k": "k",
+        "g": "ɡ",
+        "ɡ": "ɡ",
+        "p": "p",
+        "f": "f",
+        "v": "v",
+        "s": "s",
+        "z": "z",
+        "m": "m",
+        "n": "n",
+        "ɲ": "nj",
+        "ʎ": "lj",
+        "l": "l",
+        "r": "r",
+        "ɾ": "r",
+        "ttʃ": "tʃ",
+        "tʃ": "tʃ",
+        "ddʒ": "dʒ",
+        "dʒ": "dʒ",
+        "tts": "ts",
+        "ts": "ts",
+        "ddz" : "ts",
+        "dz": "ts",
+        "w": "u",
+        "j": "j",
+        "ʃ": "ʃ"
     }
     # sorted so that we check for longer constructs first
     # e.g. check for 'tʃ' before checking for 't'

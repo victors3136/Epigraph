@@ -1,5 +1,6 @@
 certifi>=2022.12.7
 datasets~=3.5
+librosa
 PyYAML~=6.0.2
 setuptools>=65.5.1
 soundfile~=0.13

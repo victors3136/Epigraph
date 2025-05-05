@@ -2,6 +2,19 @@ import re
 from spacy.tokens import Doc
 
 class Reconstructor:
+    def normalize_apostrophes(text: str) -> str:
+        # Replace apostrophes between two word characters (elision) with hyphen
+        # In Italian and Spanish we have constructs like:
+        # l'avevo 
+        # And we would like to turn it to a more Romanian-like:
+        # l-avevo
+        text = re.sub(r"(?<=\w)'(?=\w)", "-", text)
+    
+        # Step 2: Skip whitepsace between 2 words when there is an apostrophe
+        text = re.sub(r"'\s", "'", text)
+
+        return text
+
     @classmethod
     def apply(cls, baseDoc: Doc, graphemes: list[str]) -> str:
         out_words = []
@@ -18,4 +31,4 @@ class Reconstructor:
             else:
                 out_words.append(token.text + token.whitespace_)
 
-        return "".join(out_words)
+        return cls.normalize_apostrophes("".join(out_words))

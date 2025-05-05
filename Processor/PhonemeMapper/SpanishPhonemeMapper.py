@@ -1,11 +1,36 @@
 class SpanishPhonemeMapper:
     __Sp2Ro = {
         # vowels
-        "a": "a", "e": "e", "i": "i", "o": "o", "u": "u",
+        "a": "a",
+        "e": "e",
+        "i": "i",
+        "o": "o",
+        "u": "u",
         # consonants
-        "b": "b", "d": "d", "t": "t", "k": "k", "g": "ɡ", "p": "p", "f": "f", "ɡ" : "ɡ",
-        "s": "s", "z": "z", "m": "m", "n": "n", "ɲ": "nj", "ʎ": "lj", "l": "l", "j": "j",
-        "r": "r", "ɾ": "r", "tʃ": "tʃ", "x": "h", "θ": "s", "ʃ": "ʃ", "ʝ": "j", "w" : "u"
+        "b": "b",
+        "d": "d",
+        "t": "t",
+        "k": "k",
+        "g": "ɡ",
+        "p": "p",
+        "f": "f",
+        "ɡ" : "ɡ",
+        "s": "s",
+        "z": "z",
+        "m": "m",
+        "n": "n",
+        "ɲ": "nj",
+        "ʎ": "lj",
+        "l": "l",
+        "j": "j",
+        "r": "r",
+        "ɾ": "r",
+        "tʃ": "tʃ",
+        "x": "h",
+        "θ": "s",
+        "ʃ": "ʃ",
+        "ʝ": "j",
+        "w" : "u"
     }
     # sorted so that we check for longer constructs first
     # e.g. check for 'tʃ' before checking for 't'
