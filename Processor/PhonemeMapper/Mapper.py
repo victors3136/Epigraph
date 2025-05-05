@@ -1,6 +1,6 @@
-from CommonCore.supported_language import SupportedLanguage
-from PhonemeMapper.ItalianPhonemeMapper import ItalianPhonemeMapper
-from PhonemeMapper.SpanishPhonemeMapper import SpanishPhonemeMapper
+from Processor.CommonCore.supported_language import SupportedLanguage
+from Processor.PhonemeMapper.ItalianPhonemeMapper import ItalianPhonemeMapper
+from Processor.PhonemeMapper.SpanishPhonemeMapper import SpanishPhonemeMapper
 
 
 def __get_mapper(language: SupportedLanguage):

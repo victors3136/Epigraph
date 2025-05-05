@@ -5,9 +5,9 @@ from typing import List, Tuple, Iterable
 
 import tqdm
 
-from DeepPhonemizer.dp.preprocessing.text import Preprocessor
-from DeepPhonemizer.dp.utils.io import read_config, pickle_binary
-from DeepPhonemizer.dp.utils.logging import get_logger
+from Processor.DeepPhonemizer.dp.preprocessing.text import Preprocessor
+from Processor.DeepPhonemizer.dp.utils.io import read_config, pickle_binary
+from Processor.DeepPhonemizer.dp.utils.logging import get_logger
 
 logger = get_logger(__name__)
 

@@ -1,18 +1,18 @@
-from CommonCore.supported_language import SupportedLanguage
-from DeepGraphemizer.Phoneme2GraphemeConverter import Phoneme2GraphemeConverter
-from DeepPhonemizer.Grapheme2PhonemeConverter import Grapheme2PhonemeConverter
-from PhonemeMapper.Mapper import phoneme_map
+from Processor.CommonCore import SupportedLanguage
+from Processor.DeepGraphemizer import Phoneme2GraphemeConverter
+from Processor.DeepPhonemizer.Grapheme2PhonemeConverter import Grapheme2PhonemeConverter
+from Processor.PhonemeMapper import phoneme_map
 
 if __name__ == "__main__":
     ita_phonemizer = Grapheme2PhonemeConverter(
         SupportedLanguage.Italian,
-        "./DeepPhonemizer/g2p_latin_models/"
+        "Processor/DeepPhonemizer/g2p_latin_models/"
     )
     spa_phonemizer = Grapheme2PhonemeConverter(
         SupportedLanguage.Spanish,
-        "./DeepPhonemizer/g2p_latin_models/"
+        "Processor/DeepPhonemizer/g2p_latin_models/"
     )
-    graphemizer = Phoneme2GraphemeConverter("./DeepGraphemizer/p2g_romanian_model")
+    graphemizer = Phoneme2GraphemeConverter("Processor/DeepGraphemizer/p2g_romanian_model")
 
     for word in ["capra", "calca", "piatra",        # Romanian (no diacritics)
                  "dies", "irae", "dies", "illa"]:   # Latin

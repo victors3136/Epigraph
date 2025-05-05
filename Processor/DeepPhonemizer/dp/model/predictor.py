@@ -3,11 +3,11 @@ from typing import Dict, List, Tuple
 import torch
 from torch.nn.utils.rnn import pad_sequence
 
-from DeepPhonemizer.dp import Prediction
-from DeepPhonemizer.dp.model.model import load_checkpoint
-from DeepPhonemizer.dp.model.utils import _get_len_util_stop
-from DeepPhonemizer.dp.preprocessing.text import Preprocessor
-from DeepPhonemizer.dp.preprocessing.utils import batchify, product
+from Processor.DeepPhonemizer.dp import Prediction
+from Processor.DeepPhonemizer.dp.model.model import load_checkpoint
+from Processor.DeepPhonemizer.dp.model.utils import _get_len_util_stop
+from Processor.DeepPhonemizer.dp.preprocessing.text import Preprocessor
+from Processor.DeepPhonemizer.dp.preprocessing.utils import batchify, product
 
 
 class Predictor:

@@ -5,8 +5,8 @@ import torch
 import torch.nn as nn
 from torch.nn import TransformerEncoderLayer, LayerNorm, TransformerEncoder
 
-from DeepPhonemizer.dp.model.utils import get_dedup_tokens, _make_len_mask, PositionalEncoding
-from DeepPhonemizer.dp.preprocessing.text import Preprocessor
+from Processor.DeepPhonemizer.dp.model.utils import get_dedup_tokens, _make_len_mask, PositionalEncoding
+from Processor.DeepPhonemizer.dp.preprocessing.text import Preprocessor
 
 
 class Model(torch.nn.Module, ABC):

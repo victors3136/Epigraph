@@ -2,10 +2,10 @@ import re
 from itertools import zip_longest
 from typing import Dict, Union, List, Set
 
-from DeepPhonemizer.dp import PhonemizerResult
-from DeepPhonemizer.dp.model.model import load_checkpoint
-from DeepPhonemizer.dp.model.predictor import Predictor
-from DeepPhonemizer.dp.utils.logging import get_logger
+from Processor.DeepPhonemizer.dp import PhonemizerResult
+from Processor.DeepPhonemizer.dp.model.model import load_checkpoint
+from Processor.DeepPhonemizer.dp.model.predictor import Predictor
+from Processor.DeepPhonemizer.dp.utils.logging import get_logger
 
 DEFAULT_PUNCTUATION = '().,:?!/–'
 

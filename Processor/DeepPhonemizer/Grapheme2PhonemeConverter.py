@@ -1,8 +1,8 @@
 import torch
 import warnings
 
-from CommonCore.supported_language import SupportedLanguage
-from DeepPhonemizer.dp.phonemizer import Phonemizer
+from Processor.CommonCore.supported_language import SupportedLanguage
+from Processor.DeepPhonemizer.dp.phonemizer import Phonemizer
 
 
 class Grapheme2PhonemeConverter:

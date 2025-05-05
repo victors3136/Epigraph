@@ -1,4 +1,4 @@
-from DeepGraphemizer.Phoneme2GraphemeConverter import Phoneme2GraphemeConverter
+from Processor.DeepGraphemizer.Phoneme2GraphemeConverter import Phoneme2GraphemeConverter
 
 if __name__ == "__main__":
     graphemizer = Phoneme2GraphemeConverter()
