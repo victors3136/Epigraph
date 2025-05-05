@@ -18,6 +18,9 @@ def phoneme_map(language: SupportedLanguage, phoneme: str) -> str:
     mapper = __get_mapper(language)
     result = []
     while i < len(phoneme):
+        if phoneme[i] == " ":
+            i += 1
+            continue
         matched = False
         for key in mapper.keys():
             if phoneme[i:i + len(key)] == key:
