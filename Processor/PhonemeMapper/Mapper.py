@@ -3,22 +3,22 @@ from Processor.PhonemeMapper.ItalianPhonemeMapper import ItalianPhonemeMapper
 from Processor.PhonemeMapper.SpanishPhonemeMapper import SpanishPhonemeMapper
 
 
-def __get_mapper(language: SupportedLanguage):
-    match language:
-        case SupportedLanguage.Italian:
-            return ItalianPhonemeMapper
-        case SupportedLanguage.Spanish:
-            return SpanishPhonemeMapper
-        case _:
-            raise Exception(f"Unknown language: {language}")
 
 class PhonemeMap:
     @classmethod
-    def apply(cls,language: SupportedLanguage, phoneme: str | list[str]) -> str | list[str]:
+    def __get_mapper(cls, language: SupportedLanguage):
+        match language:
+            case SupportedLanguage.Italian:
+                return ItalianPhonemeMapper
+            case SupportedLanguage.Spanish:
+                return SpanishPhonemeMapper
+
+    @classmethod
+    def apply(cls, language: SupportedLanguage, phoneme: str | list[str]) -> str | list[str]:
         if isinstance(phoneme, list):
             return [cls.apply(language, p) for p in phoneme]
         i = 0
-        mapper = __get_mapper(language)
+        mapper = cls.__get_mapper(language)
         result = []
         while i < len(phoneme):
             if phoneme[i] == " ":

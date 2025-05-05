@@ -2,7 +2,7 @@ from expose_deep_phonemizer_module import expose_dp
 from Processor.CommonCore.supported_language import SupportedLanguage
 from Processor.DeepGraphemizer.Phoneme2GraphemeConverter import Phoneme2GraphemeConverter as P2G
 from Processor.DeepPhonemizer.Grapheme2PhonemeConverter import Grapheme2PhonemeConverter as G2P
-from Processor.PhonemeMapper.Mapper import phoneme_map
+from Processor.PhonemeMapper.Mapper import PhonemeMap
 from Processor.Pipeline import Pipeline
 import warnings
 
@@ -21,14 +21,14 @@ graphemizer = P2G("Processor/DeepGraphemizer/p2g_romanian_model")
 
 def process_ita(base: list[str]):
     ita = ita_phonemizer(base)
-    ita_p = phoneme_map(SupportedLanguage.Italian, ita)
+    ita_p = PhonemeMap.apply(SupportedLanguage.Italian, ita)
     ita_r = graphemizer(ita_p)
     for word, i1, i2, i3 in zip(base, ita, ita_p, ita_r):
         print(f"{word} --[Italian G2P]-> {i1} --[It2Ro Map]-> {i2} --[Romanian P2G]-> {i3}")
 
 def process_spa(base: list[str]):
     spa = spa_phonemizer(base)
-    spa_p = phoneme_map(SupportedLanguage.Spanish, spa)
+    spa_p = PhonemeMap.apply(SupportedLanguage.Spanish, spa)
     spa_r = graphemizer(spa_p)
     for word, i1, i2, i3 in zip(base, spa, spa_p, spa_r):
         print(f"{word} --[Spanish G2P]-> {i1} --[Sp2Ro Map]-> {i2} --[Romanian P2G]-> {i3}")
