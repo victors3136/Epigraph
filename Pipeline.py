@@ -8,12 +8,12 @@ from Processor.PhonemeMapper.Mapper import phoneme_map
 class Pipeline:
     def __init__(self, lang: SupportedLanguage):
         self.lang = lang
-        g2p = G2P(lang, "./Processor/DeepPhonemizer/g2p_latin_models/")
-        p2g = P2G("./Processor/DeepGraphemizer/p2g_romanian_model")
+        self.g2p = G2P(lang, "./Processor/DeepPhonemizer/g2p_latin_models/")
+        self.p2g = P2G("./Processor/DeepGraphemizer/p2g_romanian_model")
 
     def __call__(self, text: str) -> str:
-        phonemes = g2p(text)
-        ro_phonemes  == phoneme_map(self.lang, phonemes)
-        graphemes = p2g(ro_phonemes)
+        phonemes = self.g2p(text)
+        ro_phonemes = phoneme_map(self.lang, phonemes)
+        graphemes = self.p2g(ro_phonemes)
         print(f"{text} --[G2P]-> {phonemes} --[Map]-> {ro_phonemes} --[P2G]-> {graphemes}")
         return graphemes
