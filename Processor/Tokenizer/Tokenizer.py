@@ -8,7 +8,7 @@ class Tokenizer:
     _Spanish = spacy.load("es_dep_news_trf")
 
     @classmethod
-    def tokenize(cls, lang: SupportedLanguage, text: str) -> Doc:
+    def apply(cls, lang: SupportedLanguage, text: str) -> Doc:
         match(lang):
             case SupportedLanguage.Italian:
                 return cls._Italian(text)

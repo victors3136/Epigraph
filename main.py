@@ -4,6 +4,7 @@ from Processor.DeepGraphemizer.Phoneme2GraphemeConverter import Phoneme2Grapheme
 from Processor.DeepPhonemizer.Grapheme2PhonemeConverter import Grapheme2PhonemeConverter as G2P
 from Processor.PhonemeMapper.Mapper import phoneme_map
 from Processor.Pipeline import Pipeline
+import warnings
 
 expose_dp()
 
@@ -50,23 +51,40 @@ if __name__ == "__main__":
     # process_spa(["Unas", "vetilas", "de", "monchero", "cruzaron", "el", "bragón"])
 
     p_ita = Pipeline(SupportedLanguage.Italian)
-    p_ita(" Una mattina mi son svegliato "
-        "O bella ciao, bella ciao, bella ciao ciao ciao "
-        "Una mattina mi son svegliato "
-        "E ho trovato l'invasor "
-        "O partigiano porta mi via "
-        "O bella ciao, bella ciao, bella ciao ciao ciao "
-        "O partigiano porta mi via "
+    text = "Zambo Gimmi ha detto:\n" \
+        "Una mattina mi son svegliato\n" \
+        "O bella ciao, bella ciao, bella ciao ciao ciao\n" \
+        "Una mattina mi son svegliato\n" \
+        "E ho trovato l'invasor\n" \
+        "O partigiano porta mi via\n" \
+        "O bella ciao, bella ciao, bella ciao ciao ciao\n" \
+        "O partigiano porta mi via\n" \
         "Che mi sento di morir"
-    )
-
+    result = p_ita(text)
+    print("[===ITA===]")
+    print("\nBase:")
+    print(text)
+    print("\nResult:")
+    print(result)
+    print("[=========]\n")
     p_spa = Pipeline(SupportedLanguage.Spanish)
-    p_spa("La cucaracha, la cucaracha "
-            "Ya no puede caminar "
-            "Porque no tiene, porque le falta "
-            "Una pata para andar "
-            "Una cucaracha grande "
-            "Se pasea en la cocina "
-            "Y la chancla de mi madre "
-            "Le ha quitado una patita "
-    )
+    text = "Zambo Gimmi ha dichio:\n" \
+            "La cucaracha, la cucaracha\n" \
+            "Ya no puede caminar\n" \
+            "Porque no tiene, porque le falta\n" \
+            "Una pata para andar\n" \
+            "Una cucaracha grande\n" \
+            "Se pasea en la cocina\n" \
+            "Y la chancla de mi madre\n" \
+            "Le ha quitado una patita " 
+    result = p_spa(text)
+    print("[===SPA===]")
+    print("\nBase:")
+    print(text)
+    print("\nResult:")
+    print(result)
+    print("[=========]\n")
+
+    warnings.filterwarnings("ignore",
+                            message="Implicitly cleaning up <TemporaryDirectory*",
+                            category=ResourceWarning)

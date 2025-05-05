@@ -5,7 +5,7 @@ class ItalianPhonemeMapper:
         # consonants
         "b": "b", "d": "d", "t": "t", "k": "k", "g": "ɡ", "p": "p", "f": "f", "v": "v",
         "s": "s", "z": "z", "m": "m", "n": "n", "ɲ": "nj", "ʎ": "lj", "l": "l", "ɡ": "ɡ",
-        "r": "r", "ɾ": "r", "tʃ": "tʃ", "dʒ": "dʒ", "ts": "ts", "dz": "dz",
+        "r": "r", "ɾ": "r", "tʃ": "tʃ", "dʒ": "dʒ", "ts": "ts", "dz": "ts",
         "w": "u", "j": "j", "ʃ": "ʃ"
     }
     # sorted so that we check for longer constructs first

@@ -4,6 +4,7 @@ from Processor.DeepPhonemizer.Grapheme2PhonemeConverter import \
 from Processor.DeepGraphemizer.Phoneme2GraphemeConverter import \
                              Phoneme2GraphemeConverter as P2G
 from Processor.PhonemeMapper.Mapper import phoneme_map
+from Processor.Reconstructor.Reconstructor import Reconstructor
 from Processor.Tokenizer.Tokenizer import Tokenizer
 
 import re
@@ -20,7 +21,7 @@ class Pipeline:
         self.p2g = P2G("./Processor/DeepGraphemizer/p2g_romanian_model")
 
     def __call__(self, text: str) -> str:
-        tokens = Tokenizer.tokenize(self.lang, text)
+        tokens = Tokenizer.apply(self.lang, text)
         
         word_tokens = [token for token in tokens if re.match(r"^\w+$", token.text)]
 
@@ -29,15 +30,15 @@ class Pipeline:
         phonemes = self.g2p(token_text)
         ro_phonemes = phoneme_map(self.lang, phonemes)
         graphemes = self.p2g(ro_phonemes)
-        for t, p, rp, g in zip(token_text, phonemes, ro_phonemes, graphemes):
-            t_str = truncate(t, COL_WIDTH)
-            p_str = truncate(p, COL_WIDTH)
-            rp_str = truncate(rp, COL_WIDTH)
-            g_str = truncate(g, COL_WIDTH)
-            print(
-                f"{t_str.ljust(COL_WIDTH)}--[G2P]-> "
-                f"{p_str.ljust(COL_WIDTH)}--[Map]-> "
-                f"{rp_str.ljust(COL_WIDTH)}--[P2G]-> "
-                f"{g_str.ljust(COL_WIDTH)}"
-            )
-        return " ".join(graphemes)
+        # for t, p, rp, g in zip(token_text, phonemes, ro_phonemes, graphemes):
+        #     t_str = truncate(t, COL_WIDTH)
+        #     p_str = truncate(p, COL_WIDTH)
+        #     rp_str = truncate(rp, COL_WIDTH)
+        #     g_str = truncate(g, COL_WIDTH)
+        #     print(
+        #         f"{t_str.ljust(COL_WIDTH)}--[G2P]-> "
+        #         f"{p_str.ljust(COL_WIDTH)}--[Map]-> "
+        #         f"{rp_str.ljust(COL_WIDTH)}--[P2G]-> "
+        #         f"{g_str.ljust(COL_WIDTH)}"
+        #     )
+        return Reconstructor.apply(tokens, graphemes)
