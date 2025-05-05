@@ -51,15 +51,17 @@ if __name__ == "__main__":
     # process_spa(["Unas", "vetilas", "de", "monchero", "cruzaron", "el", "bragón"])
 
     p_ita = Pipeline(SupportedLanguage.Italian)
-    text = "Zambo Gimmi ha detto:\n" \
-        "Una mattina mi son svegliato\n" \
-        "O bella ciao, bella ciao, bella ciao ciao ciao\n" \
-        "Una mattina mi son svegliato\n" \
-        "E ho trovato l'invasor\n" \
-        "O partigiano porta mi via\n" \
-        "O bella ciao, bella ciao, bella ciao ciao ciao\n" \
-        "O partigiano porta mi via\n" \
-        "Che mi sento di morir"
+    text = """
+    Nel mezzo del cammin di nostra vita
+    mi ritrovai per una selva oscura,
+    ché la diritta via era smarrita.
+    Ahi quanto a dir qual era è cosa dura
+    esta selva selvaggia e aspra e forte
+    che nel pensier rinova la paura!
+    Tant' è amara che poco è più morte;
+    ma per trattar del ben ch'i' vi trovai,
+    dirò de l'altre cose ch'i' v'ho scorte
+    """
     result = p_ita(text)
     print("[===ITA===]")
     print("\nBase:")
@@ -68,15 +70,13 @@ if __name__ == "__main__":
     print(result)
     print("[=========]\n")
     p_spa = Pipeline(SupportedLanguage.Spanish)
-    text = "Zambo Gimmi ha dichio:\n" \
-            "La cucaracha, la cucaracha\n" \
-            "Ya no puede caminar\n" \
-            "Porque no tiene, porque le falta\n" \
-            "Una pata para andar\n" \
-            "Una cucaracha grande\n" \
-            "Se pasea en la cocina\n" \
-            "Y la chancla de mi madre\n" \
-            "Le ha quitado una patita " 
+    text = """
+    Desocupado Lector: sin juramento me podrás creer que quisiera que este
+    Libro, como hijo del entendimiento, fuera el más hermoso, el más gallardo y
+    más discreto que pudiera imaginarse; pero no he podido yo contravenir al
+    orden de Naturaleza: que en ella cada cosa engendra su semejante. Y así, ¿qué podrá en-
+    gendrar el estéril y mal cultivado ingenio mío
+    """ 
     result = p_spa(text)
     print("[===SPA===]")
     print("\nBase:")
