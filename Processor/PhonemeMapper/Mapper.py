@@ -13,7 +13,9 @@ def __get_mapper(language: SupportedLanguage):
             raise Exception(f"Unknown language: {language}")
 
 
-def phoneme_map(language: SupportedLanguage, phoneme: str) -> str:
+def phoneme_map(language: SupportedLanguage, phoneme: str | list[str]) -> str | list[str]:
+    if isinstance(phoneme, list):
+        return [phoneme_map(language, p) for p in phoneme]
     i = 0
     mapper = __get_mapper(language)
     result = []

@@ -1,7 +1,7 @@
 certifi>=2022.12.7
 PyYAML~=6.0.2
 setuptools>=65.5.1
-spacy>=3.7
+spacy
 tensorboard
 torch==2.6.0
 tqdm~=4.67.1

@@ -18,6 +18,6 @@ class Grapheme2PhonemeConverter:
                                                 device=device)
         warnings.resetwarnings()
 
-    def __call__(self, word: str | list[str]) -> str | list[str]:
-        result = self.model(word, lang=str(self.language))
-        return result
+    def __call__(self, words: list[str]) -> list[str]:
+        result = self.model(words, lang=str(self.language))
+        return result if isinstance(result, list) else [result]
