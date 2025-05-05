@@ -12,24 +12,25 @@ def __get_mapper(language: SupportedLanguage):
         case _:
             raise Exception(f"Unknown language: {language}")
 
-
-def phoneme_map(language: SupportedLanguage, phoneme: str | list[str]) -> str | list[str]:
-    if isinstance(phoneme, list):
-        return [phoneme_map(language, p) for p in phoneme]
-    i = 0
-    mapper = __get_mapper(language)
-    result = []
-    while i < len(phoneme):
-        if phoneme[i] == " ":
-            i += 1
-            continue
-        matched = False
-        for key in mapper.keys():
-            if phoneme[i:i + len(key)] == key:
-                result.append(mapper.dict()[key])
-                i += len(key)
-                matched = True
-                break
-        if not matched:
-            raise ValueError(f"Unrecognized phoneme sequence at position {i}: '{phoneme[i:]}'")
-    return ''.join(result)
+class PhonemeMap:
+    @classmethod
+    def apply(cls,language: SupportedLanguage, phoneme: str | list[str]) -> str | list[str]:
+        if isinstance(phoneme, list):
+            return [cls.apply(language, p) for p in phoneme]
+        i = 0
+        mapper = __get_mapper(language)
+        result = []
+        while i < len(phoneme):
+            if phoneme[i] == " ":
+                i += 1
+                continue
+            matched = False
+            for key in mapper.keys():
+                if phoneme[i:i + len(key)] == key:
+                    result.append(mapper.dict()[key])
+                    i += len(key)
+                    matched = True
+                    break
+            if not matched:
+                raise ValueError(f"Unrecognized phoneme sequence at position {i}: '{phoneme[i:]}'")
+        return ''.join(result)

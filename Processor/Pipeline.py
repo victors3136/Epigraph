@@ -3,7 +3,7 @@ from Processor.DeepPhonemizer.Grapheme2PhonemeConverter import \
                              Grapheme2PhonemeConverter as G2P
 from Processor.DeepGraphemizer.Phoneme2GraphemeConverter import \
                              Phoneme2GraphemeConverter as P2G
-from Processor.PhonemeMapper.Mapper import phoneme_map
+from Processor.PhonemeMapper.Mapper import PhonemeMap
 from Processor.Reconstructor.Reconstructor import Reconstructor
 from Processor.Tokenizer.Tokenizer import Tokenizer
 
@@ -28,7 +28,7 @@ class Pipeline:
         token_text = [token.text for token in word_tokens]
         
         phonemes = self.g2p(token_text)
-        ro_phonemes = phoneme_map(self.lang, phonemes)
+        ro_phonemes = PhonemeMap.apply(self.lang, phonemes)
         graphemes = self.p2g(ro_phonemes)
         # for t, p, rp, g in zip(token_text, phonemes, ro_phonemes, graphemes):
         #     t_str = truncate(t, COL_WIDTH)
