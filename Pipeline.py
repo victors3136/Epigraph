@@ -4,6 +4,7 @@ from Processor.DeepPhonemizer.Grapheme2PhonemeConverter import \
 from Processor.DeepGraphemizer.Phoneme2GraphemeConverter import \
                              Phoneme2GraphemeConverter as P2G
 from Processor.PhonemeMapper.Mapper import phoneme_map
+from Processor.Tokenizer import Tokenizer
 
 class Pipeline:
     def __init__(self, lang: SupportedLanguage):
@@ -12,8 +13,12 @@ class Pipeline:
         self.p2g = P2G("./Processor/DeepGraphemizer/p2g_romanian_model")
 
     def __call__(self, text: str) -> str:
-        phonemes = self.g2p(text)
+        tokens = Tokenizer.tokenize(self.lang, text)
+        token_text = [token.text for token in tokens]
+        phonemes = self.g2p(token_text)
         ro_phonemes = phoneme_map(self.lang, phonemes)
         graphemes = self.p2g(ro_phonemes)
         print(f"{text} --[G2P]-> {phonemes} --[Map]-> {ro_phonemes} --[P2G]-> {graphemes}")
+        if isinstance(graphemes, list):
+            return " ".join(graphemes)
         return graphemes
