@@ -19,7 +19,6 @@ O partigeno porta mi via
 O bella ciao, bella ciao, bella ciao ciao ciao  
 O partigeno porta mi via  
 Che mi sento di morir  
-#[=========]
   
 # [===SPA===]
 
@@ -42,4 +41,3 @@ Una cucaracea grande
 Se pasea en la cosina  
 I la ciancla de mi madre  
 Le a chitado una patita   
-#[=========]
