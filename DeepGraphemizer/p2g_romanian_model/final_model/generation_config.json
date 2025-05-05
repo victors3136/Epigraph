@@ -1,0 +1,6 @@
+{
+  "_from_model_config": true,
+  "decoder_start_token_id": 3,
+  "pad_token_id": 2,
+  "transformers_version": "4.51.3"
+}
