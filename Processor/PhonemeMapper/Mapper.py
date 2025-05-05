@@ -1,4 +1,4 @@
-from Processor.CommonCore.supported_language import SupportedLanguage
+from Processor.Domain.supported_language import SupportedLanguage
 from Processor.PhonemeMapper.ItalianPhonemeMapper import ItalianPhonemeMapper
 from Processor.PhonemeMapper.SpanishPhonemeMapper import SpanishPhonemeMapper
 

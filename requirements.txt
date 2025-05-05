@@ -1,9 +1,12 @@
 certifi>=2022.12.7
+datasets~=3.5
 PyYAML~=6.0.2
 setuptools>=65.5.1
+soundfile~=0.13
 spacy
 tensorboard
 torch==2.6.0
 tqdm~=4.67.1
 transformers~=4.51.3
 wheel>=0.38.0
+hf_xet~=1.1

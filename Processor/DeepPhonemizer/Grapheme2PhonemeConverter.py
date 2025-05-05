@@ -1,7 +1,7 @@
 import torch
 import warnings
 
-from Processor.CommonCore.supported_language import SupportedLanguage
+from Processor.Domain.supported_language import SupportedLanguage
 from Processor.DeepPhonemizer.dp.phonemizer import Phonemizer
 
 

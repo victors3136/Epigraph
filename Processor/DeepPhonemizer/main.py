@@ -1,4 +1,4 @@
-from Processor.CommonCore.supported_language import SupportedLanguage
+from Processor.Domain.supported_language import SupportedLanguage
 from Processor.DeepPhonemizer.Grapheme2PhonemeConverter import Grapheme2PhonemeConverter
 
 if __name__ == "__main__":

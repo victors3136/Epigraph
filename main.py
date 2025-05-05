@@ -1,9 +1,10 @@
 from expose_deep_phonemizer_module import expose_dp
-from Processor.CommonCore.supported_language import SupportedLanguage
+from Processor.Domain.supported_language import SupportedLanguage
 from Processor.DeepGraphemizer.Phoneme2GraphemeConverter import Phoneme2GraphemeConverter as P2G
 from Processor.DeepPhonemizer.Grapheme2PhonemeConverter import Grapheme2PhonemeConverter as G2P
 from Processor.PhonemeMapper.Mapper import PhonemeMap
 from Processor.Pipeline import Pipeline
+from Loader.CVLoader import Loader
 import warnings
 
 expose_dp()
@@ -50,41 +51,46 @@ if __name__ == "__main__":
     # process_spa(["Aquella", "estrella", "brillaba", "en", "silencio"])
     # process_spa(["Unas", "vetilas", "de", "monchero", "cruzaron", "el", "bragón"])
 
-    p_ita = Pipeline(SupportedLanguage.Italian)
-    text = """
-    Nel mezzo del cammin di nostra vita
-    mi ritrovai per una selva oscura,
-    ché la diritta via era smarrita.
-    Ahi quanto a dir qual era è cosa dura
-    esta selva selvaggia e aspra e forte
-    che nel pensier rinova la paura!
-    Tant' è amara che poco è più morte;
-    ma per trattar del ben ch'i' vi trovai,
-    dirò de l'altre cose ch'i' v'ho scorte
-    """
-    result = p_ita(text)
-    print("[===ITA===]")
-    print("\nBase:")
-    print(text)
-    print("\nResult:")
-    print(result)
-    print("[=========]\n")
-    p_spa = Pipeline(SupportedLanguage.Spanish)
-    text = """
-    Desocupado Lector: sin juramento me podrás creer que quisiera que este
-    Libro, como hijo del entendimiento, fuera el más hermoso, el más gallardo y
-    más discreto que pudiera imaginarse; pero no he podido yo contravenir al
-    orden de Naturaleza: que en ella cada cosa engendra su semejante. Y así, ¿qué podrá en-
-    gendrar el estéril y mal cultivado ingenio mío
-    """ 
-    result = p_spa(text)
-    print("[===SPA===]")
-    print("\nBase:")
-    print(text)
-    print("\nResult:")
-    print(result)
-    print("[=========]\n")
+    # p_ita = Pipeline(SupportedLanguage.Italian)
+    # text = """
+    # Nel mezzo del cammin di nostra vita
+    # mi ritrovai per una selva oscura,
+    # ché la diritta via era smarrita.
+    # Ahi quanto a dir qual era è cosa dura
+    # esta selva selvaggia e aspra e forte
+    # che nel pensier rinova la paura!
+    # Tant' è amara che poco è più morte;
+    # ma per trattar del ben ch'i' vi trovai,
+    # dirò de l'altre cose ch'i' v'ho scorte
+    # """
+    # result = p_ita(text)
+    # print("[===ITA===]")
+    # print("\nBase:")
+    # print(text)
+    # print("\nResult:")
+    # print(result)
+    # print("[=========]\n")
+    # p_spa = Pipeline(SupportedLanguage.Spanish)
+    # text = """
+    # Desocupado Lector: sin juramento me podrás creer que quisiera que este
+    # Libro, como hijo del entendimiento, fuera el más hermoso, el más gallardo y
+    # más discreto que pudiera imaginarse; pero no he podido yo contravenir al
+    # orden de Naturaleza: que en ella cada cosa engendra su semejante. Y así, ¿qué podrá en-
+    # gendrar el estéril y mal cultivado ingenio mío
+    # """ 
+    # result = p_spa(text)
+    # print("[===SPA===]")
+    # print("\nBase:")
+    # print(text)
+    # print("\nResult:")
+    # print(result)
+    # print("[=========]\n")
 
-    warnings.filterwarnings("ignore",
-                            message="Implicitly cleaning up <TemporaryDirectory*",
-                            category=ResourceWarning)
+    # warnings.filterwarnings("ignore",
+    #                         message="Implicitly cleaning up <TemporaryDirectory*",
+    #                         category=ResourceWarning)
+    loader = Loader(it_fraction=0.9, es_fraction=0.9)
+    dataset = loader.load()
+
+    print(f"Train size: {len(dataset['train'])}")
+    print(f"Sample: {dataset['train'][0]['sentence']}")

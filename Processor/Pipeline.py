@@ -1,4 +1,4 @@
-from Processor.CommonCore.supported_language import SupportedLanguage
+from Processor.Domain.supported_language import SupportedLanguage
 from Processor.DeepPhonemizer.Grapheme2PhonemeConverter import \
                              Grapheme2PhonemeConverter as G2P
 from Processor.DeepGraphemizer.Phoneme2GraphemeConverter import \

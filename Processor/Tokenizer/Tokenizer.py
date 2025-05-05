@@ -1,6 +1,6 @@
 import spacy
 from spacy.tokens import Doc
-from Processor.CommonCore.supported_language import SupportedLanguage
+from Processor.Domain.supported_language import SupportedLanguage
 
 
 class Tokenizer:
