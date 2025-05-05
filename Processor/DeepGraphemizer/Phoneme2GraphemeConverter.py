@@ -27,10 +27,10 @@ class Phoneme2GraphemeConverter:
     def __deformat(cls, phoneme: str):
         return "".join(phoneme.split())
 
-    def __call__(self, phonemes: str | list[str]) -> str:
+    def __call__(self, phonemes: str | list[str]) -> list[str] | str:
         if isinstance(phonemes, list):
-            return_val = [self.__call__(p) for p in phonemes]
-            return " ".join(return_val)
+            return [self.__call__(p) for p in phonemes]
+
         inputs = self.phoneme_tokenizer(phonemes, return_tensors="pt") \
             .to(self.device)
         with torch.no_grad():
