@@ -8,8 +8,8 @@ from Processor.PhonemeMapper.Mapper import phoneme_map
 class Pipeline:
     def __init__(self, lang: SupportedLanguage):
         self.lang = lang
-        g2p = G2P(lang, "./DeepPhonemizer/g2p_latin_models/")
-        p2g = P2G("./DeepGraphemizer/p2g_romanian_model")
+        g2p = G2P(lang, "./Processor/DeepPhonemizer/g2p_latin_models/")
+        p2g = P2G("./Processor/DeepGraphemizer/p2g_romanian_model")
 
     def __call__(self, text: str) -> str:
         phonemes = g2p(text)
