@@ -1,6 +1,6 @@
 import random
 from datasets import load_dataset
-from Processor.pipeline import Pipeline
+from Processor.Pipeline import Pipeline
 from Processor.Domain.supported_language import SupportedLanguage
 
 DATASET = "mozilla-foundation/common_voice_11_0"

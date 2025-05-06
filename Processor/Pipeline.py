@@ -3,9 +3,9 @@ from Processor.DeepPhonemizer.grapheme2phoneme_converter import \
                              Grapheme2PhonemeConverter as G2P
 from Processor.DeepGraphemizer.phoneme2grapheme_converter import \
                              Phoneme2GraphemeConverter as P2G
-from Processor.PhonemeMapper.mapper import PhonemeMap
-from Processor.Reconstructor.reconstructor import Reconstructor
-from Processor.Tokenizer.tokenizer import Tokenizer
+from Processor.PhonemeMapper.Mapper import PhonemeMap
+from Processor.Reconstructor.Reconstructor import Reconstructor
+from Processor.Tokenizer.Tokenizer import Tokenizer
 
 import re
 
