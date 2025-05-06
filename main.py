@@ -10,11 +10,12 @@ warnings.filterwarnings("ignore",
                         category=ResourceWarning)
 
 from expose_deep_phonemizer_module import expose_dp
-from Orchestrator.fine_tuner import WhisperFinetuner
+from Loader.cv_loader import Loader
 
 
 expose_dp()
 
 if __name__ == "__main__":
-    tuner = WhisperFinetuner(0.2, 0.2, "./models/020242/")
-    tuner.train(20, 3, 2)
+    loader = Loader(0.5, 0.5)
+    loader.load()
+
