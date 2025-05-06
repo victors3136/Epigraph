@@ -21,7 +21,7 @@ class Reconstructor:
         # Delete punctuations marks that do not exist in Romanian
         text = re.sub(r"(¿|¡) ", "", text)
     
-        # text = re.sub(r" (\.|,|!|\?)", "\1", text)
+        text = re.sub(r"\s+(\.|,|!|\?)", r"\1", text)
 
         return text
 

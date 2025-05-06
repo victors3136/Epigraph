@@ -1,5 +1,5 @@
 from Processor.Domain.supported_language import SupportedLanguage
-from Processor.DeepPhonemizer.Grapheme2PhonemeConverter import Grapheme2PhonemeConverter
+from Processor.DeepPhonemizer.grapheme2phoneme_converter import Grapheme2PhonemeConverter
 
 if __name__ == "__main__":
     it = Grapheme2PhonemeConverter(SupportedLanguage.Italian)

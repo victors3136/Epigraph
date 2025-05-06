@@ -1,6 +1,6 @@
 from Processor.Domain.supported_language import SupportedLanguage
-from Processor.PhonemeMapper.ItalianPhonemeMapper import ItalianPhonemeMapper
-from Processor.PhonemeMapper.SpanishPhonemeMapper import SpanishPhonemeMapper
+from Processor.PhonemeMapper.italian_phoneme_mapper import ItalianPhonemeMapper
+from Processor.PhonemeMapper.spanish_phoneme_mapper import SpanishPhonemeMapper
 
 
 

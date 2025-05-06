@@ -1,10 +1,10 @@
 from expose_deep_phonemizer_module import expose_dp
 from Processor.Domain.supported_language import SupportedLanguage
-from Processor.DeepGraphemizer.Phoneme2GraphemeConverter import Phoneme2GraphemeConverter as P2G
-from Processor.DeepPhonemizer.Grapheme2PhonemeConverter import Grapheme2PhonemeConverter as G2P
-from Processor.PhonemeMapper.Mapper import PhonemeMap
-from Processor.Pipeline import Pipeline
-from Loader.CVLoader import Loader
+from Processor.DeepGraphemizer.phoneme2grapheme_converter import Phoneme2GraphemeConverter as P2G
+from Processor.DeepPhonemizer.grapheme2phoneme_converter import Grapheme2PhonemeConverter as G2P
+from Processor.PhonemeMapper.mapper import PhonemeMap
+from Processor.pipeline import Pipeline
+from Loader.cv_loader import Loader
 import warnings
 
 expose_dp()
