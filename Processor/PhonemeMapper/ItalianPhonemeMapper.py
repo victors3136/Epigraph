@@ -25,6 +25,7 @@ class ItalianPhonemeMapper:
         "ɲ": "nj",
         "ʎ": "lj",
         "l": "l",
+        "ll": "l",
         "r": "r",
         "ɾ": "r",
         "ttʃ": "tʃ",
