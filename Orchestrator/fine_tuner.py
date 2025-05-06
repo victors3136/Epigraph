@@ -1,5 +1,6 @@
 import os
 import torch
+import torchaudio
 from datasets import Dataset
 from transformers import WhisperProcessor, WhisperForConditionalGeneration, TrainingArguments, Trainer
 from Loader.cv_loader import Loader
@@ -15,12 +16,16 @@ class WhisperFinetuner:
 
     def preprocess(self, batch):
         audio = batch["audio"]
-        waveform = audio["array"]
-        sample_rate = audio["sampling_rate"]
-        
+        waveform = torch.tensor(audio["array"], dtype=torch.float32)
+        original_sr = audio["sampling_rate"]
+
+        if original_sr != 16000:
+            resampler = torchaudio.transforms.Resample(orig_freq=original_sr, new_freq=16000)
+            waveform = resampler(waveform)
+
         inputs = self.processor(
-            waveform,
-            sampling_rate=sample_rate,
+            waveform.numpy(),
+            sampling_rate=16000,
             return_tensors="pt"
         )
         input_values = inputs.input_features.squeeze(0)
@@ -40,6 +45,21 @@ class WhisperFinetuner:
         processed = [self.preprocess(sample) for sample in data_list]
         return Dataset.from_list(processed)
 
+    def collate_fn(self, batch):
+        input_features = [torch.tensor(x["input_features"]) if not isinstance(x["input_features"], torch.Tensor) \
+                          else x["input_features"] for x in batch]
+        input_features = torch.stack(input_features)
+    
+        labels = torch.nn.utils.rnn.pad_sequence(
+            [torch.tensor(x["labels"]) if not isinstance(x["labels"], torch.Tensor) else x["labels"] for x in batch],
+            batch_first=True, padding_value=self.processor.tokenizer.pad_token_id
+        )
+        
+        labels[labels == self.processor.tokenizer.pad_token_id] = -100
+    
+        return {"input_features": input_features, "labels": labels}
+
+
     def train(self, n_samples: int = 10_000, num_train_epochs: int = 3, batch_size: int = 8):
         print("Loading data...")
         data = self.loader.load(n_samples)
@@ -51,8 +71,26 @@ class WhisperFinetuner:
             output_dir=self.output_path,
             per_device_train_batch_size=batch_size,
             per_device_eval_batch_size=batch_size,
-            evaluation_strategy="epoch",
             num_train_epochs=num_train_epochs,
             save_strategy="epoch",
             logging_dir=os.path.join(self.output_path, "logs"),
-            fp16=to
+            fp16=torch.cuda.is_available(),
+            save_total_limit=2,
+            push_to_hub=False
+        )
+
+
+        print("Starting training...")
+        trainer = Trainer(
+            model=self.model,
+            args=args,
+            train_dataset=train_dataset,
+            eval_dataset=val_dataset,
+            processing_class=self.processor,
+            data_collator=self.collate_fn,
+        )
+
+        trainer.train()
+        self.model.save_pretrained(self.output_path)
+        self.processor.save_pretrained(self.output_path)
+        print(f"Model saved to {self.output_path}")
