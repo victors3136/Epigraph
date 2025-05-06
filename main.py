@@ -16,5 +16,5 @@ from Orchestrator.fine_tuner import WhisperFinetuner
 expose_dp()
 
 if __name__ == "__main__":
-    tuner = WhisperFinetuner(0.1, 0.1, "./models/010142/")
-    tuner.train(10, 3, 2)
+    tuner = WhisperFinetuner(0.2, 0.2, "./models/020242/")
+    tuner.train(20, 3, 2)

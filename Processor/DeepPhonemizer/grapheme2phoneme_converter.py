@@ -9,6 +9,7 @@ class Grapheme2PhonemeConverter:
     def __init__(self,
                  language: SupportedLanguage,
                  path_prefix: str = "./g2p_latin_models/"):
+        print(f"Loading G2P for {language} ... ")
         self.language = language
         device = "cuda" if torch.cuda.is_available() else "cpu"
         warnings.filterwarnings("ignore",
@@ -17,6 +18,7 @@ class Grapheme2PhonemeConverter:
         self.model = Phonemizer.from_checkpoint(path_prefix + language.to_best_model(),
                                                 device=device)
         warnings.resetwarnings()
+        print(f"Loaded G2P for {language}! ")
 
     def __call__(self, words: list[str]) -> list[str]:
         result = self.model(words, lang=str(self.language))
