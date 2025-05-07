@@ -1,5 +1,6 @@
 import random
 import os
+from tqdm import tqdm
 from datasets import load_dataset, Dataset, DatasetDict, Features, Audio, Value
 from Processor.Pipeline import Pipeline
 from Processor.Domain.supported_language import SupportedLanguage
@@ -20,7 +21,7 @@ class Loader:
     @classmethod
     def collect_valid_samples(cls, dataset_iter, max_samples, random_gen):
         collected = []
-        for entry in dataset_iter:
+        for entry in tqdm(dataset_iter, desc="Filtering for valid data entries"):
             if entry.get("audio") and entry.get("sentence"):
                 collected.append(entry)
                 if len(collected) >= max_samples:
@@ -83,17 +84,14 @@ class Loader:
             n_es,
             self.random
         )
-
         print("Phonetically converting IT...")
-        for sample in it_data:
+        for sample in tqdm(it_data, desc="Converting Italian"):
             result = self.pipeline_it(sample["sentence"])
-            print(f"{sample['sentence']} --> {result}")
             sample["sentence"] = result
-        
+
         print("Phonetically converting ES...")
-        for sample in es_data:
+        for sample in tqdm(es_data, desc="Converting Spanish"):
             result = self.pipeline_es(sample["sentence"])
-            print(f"{sample['sentence']} --> {result}")
             sample["sentence"] = result
 
         print("Simplifying data sets...")
