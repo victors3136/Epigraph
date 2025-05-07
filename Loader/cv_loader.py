@@ -38,7 +38,14 @@ class Loader:
     def load(self, n_samples: int = 10_000):
         if os.path.exists(CACHE_DIR):
             print("Loading cached dataset...")
-            data = DatasetDict.load_from_disk(CACHE_DIR)
+            try:
+                data = DatasetDict.load_from_disk(CACHE_DIR)
+            except ValueError as e:
+                print("Corrupted or outdated dataset_info.json. Removing...")
+                import shutil
+                shutil.rmtree(CACHE_DIR)
+                data = None
+            # data = DatasetDict.load_from_disk(CACHE_DIR)
             total_cached = sum(len(data[split]) for split in data)
 
             if total_cached >= n_samples:
