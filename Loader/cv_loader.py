@@ -1,7 +1,7 @@
 import random
 import os
 from tqdm import tqdm
-from datasets import load_dataset, Dataset, DatasetDict, Features, Audio, Value
+from datasets import load_dataset, Dataset, DatasetDict, Features, Audio, Value, concatenate_datasets
 from Processor.Pipeline import Pipeline
 from Processor.Domain.supported_language import SupportedLanguage
 
@@ -122,13 +122,18 @@ class Loader:
             print("Merging with cached data...")
             for split in ["train", "val", "test"]:
                 if split in data:
-                    new_dataset[split] = data[split].concatenate(new_dataset[split]) if split in new_dataset else data[split]
+                    new_dataset[split] = concatenate_datasets([data[split],new_dataset[split]]) \
+                                            if split in new_dataset\
+                                            else data[split]
 
         total_size = sum(len(new_dataset[split]) for split in new_dataset)
         assert total_size >= n_samples, f"Total dataset size mismatch: expected at least {n_samples}, got {total_size}"
 
         print(f"Final sizes — Train: {len(new_dataset['train'])}, Val: {len(new_dataset['val'])}, Test: {len(new_dataset['test'])}")
         print("Saving dataset to disk...")
-        new_dataset.save_to_disk(CACHE_DIR)
 
+        if os.path.exists(CACHE_DIR):
+            print(f"{CACHE_DIR} already exists. Removeing it.")
+            os.removedirs(CACHE_DIR)
+        new_dataset.save_to_disk(CACHE_DIR)
         return new_dataset

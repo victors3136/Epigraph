@@ -1,8 +1,8 @@
 DATASET_CONFIGS = [
-    {"it_fraction": 0.00, "es_fraction": 0.00, "ro_count": 10},
-    {"it_fraction": 0.30, "es_fraction": 0.00, "ro_count": 10},
-    {"it_fraction": 0.00, "es_fraction": 0.30, "ro_count": 10},
-    {"it_fraction": 0.15, "es_fraction": 0.15, "ro_count": 10},
+    {"it_fraction": 0.00, "es_fraction": 0.00, "ro_count": 1000},
+    {"it_fraction": 0.30, "es_fraction": 0.00, "ro_count": 1000},
+    {"it_fraction": 0.00, "es_fraction": 0.30, "ro_count": 1000},
+    {"it_fraction": 0.15, "es_fraction": 0.15, "ro_count": 1000},
 ]
 
 from expose_deep_phonemizer_module import expose_dp
