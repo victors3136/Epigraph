@@ -1,6 +1,7 @@
 import random
 import os
 from tqdm import tqdm
+import shutil
 from datasets import load_dataset, Dataset, DatasetDict, Features, Audio, Value, concatenate_datasets
 from Processor.Pipeline import Pipeline
 from Processor.Domain.supported_language import SupportedLanguage
@@ -28,6 +29,7 @@ class Loader:
                     break
         random_gen.shuffle(collected)
         return collected
+
     @classmethod
     def simplify(cls, sample):
         return {
@@ -36,16 +38,15 @@ class Loader:
         }
 
     def load(self, n_samples: int = 10_000):
-        if os.path.exists(CACHE_DIR):
+        cache_dir = CACHE_DIR + f"it{self.it_fraction}-es{self.es_fraction}"
+        if os.path.exists(cache_dir):
             print("Loading cached dataset...")
             try:
                 data = DatasetDict.load_from_disk(CACHE_DIR)
-            except ValueError as e:
+            except ValueError as _:
                 print("Corrupted or outdated dataset_info.json. Removing...")
-                import shutil
                 shutil.rmtree(CACHE_DIR)
                 data = None
-            # data = DatasetDict.load_from_disk(CACHE_DIR)
             total_cached = sum(len(data[split]) for split in data)
 
             if total_cached >= n_samples:
@@ -132,8 +133,8 @@ class Loader:
         print(f"Final sizes — Train: {len(new_dataset['train'])}, Val: {len(new_dataset['val'])}, Test: {len(new_dataset['test'])}")
         print("Saving dataset to disk...")
 
-        if os.path.exists(CACHE_DIR):
-            print(f"{CACHE_DIR} already exists. Removeing it.")
-            os.removedirs(CACHE_DIR)
-        new_dataset.save_to_disk(CACHE_DIR)
+        if os.path.exists(cache_dir):
+            print(f"{cache_dir} already exists. Removeing it.")
+        else:
+            new_dataset.save_to_disk(cache_dir + f"it{self.it_fraction}-es{self.es_fraction}")
         return new_dataset

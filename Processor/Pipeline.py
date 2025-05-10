@@ -30,15 +30,4 @@ class Pipeline:
         phonemes = self.g2p(token_text)
         ro_phonemes = PhonemeMap.apply(self.lang, phonemes)
         graphemes = self.p2g(ro_phonemes)
-        # for t, p, rp, g in zip(token_text, phonemes, ro_phonemes, graphemes):
-        #     t_str = truncate(t, COL_WIDTH)
-        #     p_str = truncate(p, COL_WIDTH)
-        #     rp_str = truncate(rp, COL_WIDTH)
-        #     g_str = truncate(g, COL_WIDTH)
-        #     print(
-        #         f"{t_str.ljust(COL_WIDTH)}--[G2P]-> "
-        #         f"{p_str.ljust(COL_WIDTH)}--[Map]-> "
-        #         f"{rp_str.ljust(COL_WIDTH)}--[P2G]-> "
-        #         f"{g_str.ljust(COL_WIDTH)}"
-        #     )
         return Reconstructor.apply(tokens, graphemes)

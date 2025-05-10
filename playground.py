@@ -1,8 +1,7 @@
 DATASET_CONFIGS = [
-    {"it_fraction": 0.00, "es_fraction": 0.00, "ro_count": 1000},
-    {"it_fraction": 0.30, "es_fraction": 0.00, "ro_count": 1000},
-    {"it_fraction": 0.00, "es_fraction": 0.30, "ro_count": 1000},
-    {"it_fraction": 0.15, "es_fraction": 0.15, "ro_count": 1000},
+    {"it_fraction": 0.15, "es_fraction": 0.15, "ro_count": 6_000},
+    {"it_fraction": 0.15, "es_fraction": 0.15, "ro_count": 8_000},
+    {"it_fraction": 0.15, "es_fraction": 0.15, "ro_count": 10_000},
 ]
 
 from expose_deep_phonemizer_module import expose_dp
@@ -10,7 +9,7 @@ from expose_deep_phonemizer_module import expose_dp
 expose_dp()
 
 from Loader.cv_loader import Loader
-
+import time 
 for config in DATASET_CONFIGS:
     it, es, ro = config["it_fraction"], config["es_fraction"], config["ro_count"]
     name = f"{ro}-it{it}-es{es}"
@@ -23,4 +22,11 @@ for config in DATASET_CONFIGS:
     print(f"Saving {name} to {output_dir}")
     dataset.save_to_disk(output_dir)
 
-    dataset.push_to_hub(f"victors3136/{name}", private=True)
+    retries = 3
+    for i in range(retries):
+        try:
+            dataset.push_to_hub(f"victors3136/{name}", private=True)
+            break
+        except Exception as e:
+            print(f"Push failed ({i+1}/{retries}): {e}")
+            time.sleep(5)

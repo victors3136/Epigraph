@@ -28,16 +28,27 @@ class Phoneme2GraphemeConverter:
     def __deformat(cls, phoneme: str):
         return "".join(phoneme.split())
 
-    def __call__(self, phonemes: str | list[str]) -> list[str] | str:
-        if isinstance(phonemes, list):
-            return [self.__call__(p) for p in phonemes]
+    def __call__(self, phonemes: str | list[str]) -> list[str] | str | None:
+        if isinstance(phonemes, str):
+            phonemes = [phonemes]
+            single_input = True
+        else:
+            single_input = False
 
-        inputs = self.phoneme_tokenizer(phonemes, return_tensors="pt") \
-            .to(self.device)
+        inputs = self.phoneme_tokenizer(phonemes, return_tensors="pt", padding=True, truncation=True).to(self.device)
+        inputs["input_ids"] = inputs["input_ids"].long()
+
         with torch.no_grad():
-            output = self.model.generate(**inputs, max_length=50)
-        word = self.grapheme_tokenizer.decode(
-            output[0],
-            skip_special_tokens=True
-        )
-        return self.__deformat(word)
+            try:
+                outputs = self.model.generate(**inputs, max_length=50)
+            except RuntimeError as re:
+                if "Expected tensor for argument" in str(re):
+                    return None if single_input else [None] * len(phonemes)
+                else:
+                    raise re
+
+        decoded = self.grapheme_tokenizer.batch_decode(outputs, skip_special_tokens=True)
+        reformatted = [self.__deformat(word) for word in decoded]
+
+        return reformatted[0] if single_input else reformatted
+
