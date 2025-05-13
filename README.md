@@ -1,43 +1,39 @@
 # [===ITA===]  
   
 ## Base:  
-Una mattina mi son svegliato  
-O bella ciao, bella ciao, bella ciao ciao ciao  
-Una mattina mi son svegliato  
-E ho trovato l'invasor  
-O partigiano porta mi via  
-O bella ciao, bella ciao, bella ciao ciao ciao  
-O partigiano porta mi via  
-Che mi sento di morir  
+Nel mezzo del cammin di nostra vita  
+mi ritrovai per una selva oscura,  
+ché la diritta via era smarrita.  
+Ahi quanto a dir qual era è cosa dura  
+esta selva selvaggia e aspra e forte  
+che nel pensier rinova la paura!  
+Tant' è amara che poco è più morte;  
+ma per trattar del ben ch'i' vi trovai,  
+dirò de l'altre cose ch'i' v'ho scorte  
   
 ## Result:  
-Una mattina mi son zveliato  
-O bella ciao, bella ciao, bella ciao ciao ciao  
-Una mattina mi son zveliato  
-E o trovato l'invazor  
-O partigeno porta mi via  
-O bella ciao, bella ciao, bella ciao ciao ciao  
-O partigeno porta mi via  
-Che mi sento di morir  
+Nel mețo del camin di nostra vita  
+mi ritrovai per una selva oscura,  
+che la dirita via era zmarita.  
+Ai cuanto a dir cual era e cosa dura  
+esta selva selvagea e aspra e forte  
+che nel pensie rinova la paura!  
+Tent' e amara che poco e piu morte;  
+ma per tratar del ben ch-i' vi trovai,  
+diro de l-altre cose ch-i' v-o scorte  
   
 # [===SPA===]
 
 ## Base:
-La cucaracha, la cucaracha  
-Ya no puede caminar  
-Porque no tiene, porque le falta  
-Una pata para andar  
-Una cucaracha grande  
-Se pasea en la cocina  
-Y la chancla de mi madre  
-Le ha quitado una patita   
+Desocupado Lector: sin juramento me podrás creer que quisiera que este  
+Libro, como hijo del entendimiento, fuera el más hermoso, el más gallardo y  
+más discreto que pudiera imaginarse; pero no he podido yo contravenir al  
+orden de Naturaleza: que en ella cada cosa engendra su semejante. Y así, ¿qué podrá en-  
+gendrar el estéril y mal cultivado ingenio mío  
   
 ## Result:
-La cucaracea, la cucaracea  
-Ea no puede caminar  
-Porche no tiene, porche le falta  
-Una pata para andar  
-Una cucaracea grande  
-Se pasea en la cosina  
-I la ciancla de mi madre  
-Le a chitado una patita   
+Desocupado Legtor: sin huramento me podras creer che chisiera che este  
+Libro, como iho del entendimiento, fuera el mas ermoso, el mas gaiardo i  
+mas discreto che pudiera imahinarse; pero no e podido eu contrabenir al  
+orden de Naturalesa: che en eia cada cosa enhendra su semehante. I asi, che podra en-  
+hendrar el esteril i mall cultibado inhenio mio  

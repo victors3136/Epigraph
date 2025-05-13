@@ -1,6 +1,6 @@
 from expose_deep_phonemizer_module import expose_dp
 from Processor.Domain.supported_language import SupportedLanguage
-from Processor.Pipeline import Pipeline
+from Processor.pipeline import Pipeline
 
 expose_dp()
 

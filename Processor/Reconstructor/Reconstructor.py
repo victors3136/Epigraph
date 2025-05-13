@@ -10,16 +10,13 @@ class Reconstructor:
         # And we would like to turn it to a more Romanian-like:
         # l-avevo
         text = re.sub(r"(?<=\w)'(?=\w)", "-", text)
-    
-        # ßSkip whitepsace between 2 words when there is an apostrophe
-        text = re.sub(r"'\s", "'", text)
 
         return text
 
     @classmethod
     def normalize_punctuation(cls, text: str) -> str:
         # Delete punctuations marks that do not exist in Romanian
-        text = re.sub(r"(¿|¡) ", "", text)
+        text = re.sub(r"(¿|¡) ?", "", text)
     
         text = re.sub(r"\s+(\.|,|!|\?)", r"\1", text)
 
