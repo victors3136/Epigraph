@@ -16,7 +16,7 @@ for config in DATASET_CONFIGS:
     print(f"Creating {name} with IT: {it}, ES: {es}")
     loader = Loader(it_fraction=it, es_fraction=es)
 
-    dataset = loader.load(n_samples=ro)
+    dataset = loader.load(romanian_sample_count=ro)
     output_dir = f"./cached_{name}"
     print(f"Saving {name} to {output_dir}")
     dataset.save_to_disk(output_dir)
