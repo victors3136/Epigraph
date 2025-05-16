@@ -1,13 +1,13 @@
 import random
 import os
 from tqdm import tqdm
-from datasets import load_dataset, Dataset, DatasetDict, concatenate_datasets, Audio, Features, Value
+from datasets import load_dataset, Dataset, DatasetDict, concatenate_datasets, Features, Value, Audio
 from Processor.pipeline import Pipeline
 from Processor.Domain.supported_language import SupportedLanguage
 import uuid
 import shutil
 
-DatasetUrl = "mozilla-foundation/common_voice_11_0"
+DatasetUrl = "mozilla-foundation/common_voice_13_0"
 
 SampleInterface = Features({
     "audio": Audio(),
@@ -63,23 +63,22 @@ class IncrementalSampleSelector:
         rand = random.Random(seed)
 
         print(f"[{language_code}] Streaming {remaining_count} new samples...")
-        new_samples = []
+        collected = []
         iterator = load_dataset(DatasetUrl, language_code, split="train", streaming=True)
-
         for entry in tqdm(iterator, desc=f"Filtering {language_code}"):
             sample = sample_simplifier(entry)
             if sample is not None:
-                new_samples.append(sample)
-                if len(new_samples) >= remaining_count:
+                collected.append(sample)
+                if len(collected) >= remaining_count:
                     break
 
-        rand.shuffle(new_samples)
+        rand.shuffle(collected)
 
         print(f"[{language_code}] Phonetically converting...")
-        for sample in tqdm(new_samples, desc=f"Converting {language_code}"):
+        for sample in tqdm(collected, desc=f"Converting {language_code}"):
             sample["sentence"] = pipeline(sample["sentence"])
 
-        new_dataset = Dataset.from_list(new_samples, features=existing_dataset.features)
+        new_dataset = Dataset.from_list(collected, features=existing_dataset.features)
 
         combined_dataset = concatenate_datasets([existing_dataset, new_dataset])
         print("Saving to disk ...")
@@ -104,10 +103,29 @@ class Loader:
         self.spanish_pipeline = Pipeline(SupportedLanguage.Spanish)
         self.random = random.Random(seed)
 
-    def _load_romanian_data(self, count: int):
-        print("Streaming Romanian data...")
-        iterator = load_dataset(DatasetUrl, "ro", split="train", streaming=True)
-        collected = []
+    def _load_romanian_data(self, count: int, output_dir: str = "preprocessed_datasets") -> Dataset:
+        dataset_path = os.path.join(output_dir, "ro")
+        os.makedirs(output_dir, exist_ok=True)
+
+        if os.path.exists(dataset_path):
+            print("[ro] Loading cached Romanian samples from disk...")
+            existing_dataset = Dataset.load_from_disk(dataset_path)
+            existing_count = len(existing_dataset)
+            if len(existing_dataset) >= count:
+                return existing_dataset.select(range(count)).to_list()
+
+            print(f"[ro] Found only {existing_count} samples, need {count}. Fetching more...")
+
+            remaining_count = count - existing_count
+            collected = existing_dataset.to_list()
+        else:
+            print("[ro] No cached Romanian dataset found. Starting fresh.")
+            collected = []
+            existing_count = 0
+            remaining_count = count
+
+        print(f"[ro] Streaming {remaining_count} new samples...")
+        iterator = load_dataset(DatasetUrl, "ro", split="train", streaming=False).select(range(existing_count, count))
         for sample in tqdm(iterator, desc="Collecting Romanian samples"):
             simplified = sample_simplifier(sample)
             if simplified is not None:
@@ -115,8 +133,11 @@ class Loader:
                 if len(collected) >= count:
                     break
 
-        self.random.shuffle(collected)
+        print("[ro] Saving Romanian dataset to disk...")
+        Dataset.from_list(collected, features=SampleInterface).save_to_disk(dataset_path)
+
         return collected
+
 
     def _split_romanian_data(self, data: list) -> tuple[Dataset, Dataset, Dataset]:
         val_size = int(0.1 * len(data))

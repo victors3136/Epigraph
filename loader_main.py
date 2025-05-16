@@ -1,14 +1,15 @@
 from expose_deep_phonemizer_module import expose_dp
 from Loader.cv_loader import Loader
+
 import uuid
 
 expose_dp()
 
 if __name__ == "__main__":
-    print("Initializing Loader...")
+    print("\nInitializing Loader...")
     loader = Loader(it_fraction=0.2, es_fraction=0.2)
 
-    print("Loading dataset (small-scale test)...")
+    print("\nLoading dataset (small-scale test)...")
     cache_dir = str(uuid.uuid4())
     dataset = loader.load(romanian_sample_count=100, output_dir=cache_dir)
 

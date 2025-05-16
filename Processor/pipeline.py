@@ -22,12 +22,8 @@ class Pipeline:
 
     def __call__(self, text: str) -> str:
         tokens = Tokenizer.apply(self.lang, text)
-        
-        word_tokens = [token for token in tokens if re.match(r"^\w+$", token.text)]
-
-        token_text = [token.text for token in word_tokens]
-        
-        phonemes = self.g2p(token_text)
+        word_tokens = [token.text for token in tokens if re.match(r"^\w+$", token.text)]
+        phonemes = self.g2p(word_tokens)
         ro_phonemes = PhonemeMap.apply(self.lang, phonemes)
         graphemes = self.p2g(ro_phonemes)
         return Reconstructor.apply(tokens, graphemes)
