@@ -3,6 +3,7 @@ certifi
 datasets
 fsspec
 hf_xet
+jiwer
 librosa
 PyYAML
 setuptools
