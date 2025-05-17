@@ -5,5 +5,7 @@ This repository consists of a set of modules that can be used for:
  - finetuning Whisper models using said data  
  - benchmarking different projects  
  - link a server with any of the generated models in order to run inferences
-![image](https://github.com/user-attachments/assets/692825e5-3f43-4d48-af41-6d4e0b7a4f83)
-
+  
+  
+  
+![image](https://github.com/user-attachments/assets/aad11343-4205-495c-b900-74b12664331e)
