@@ -2,6 +2,7 @@ accelerate
 certifi
 datasets
 fsspec
+hf_xet
 librosa
 PyYAML
 setuptools
@@ -13,4 +14,4 @@ torchaudio
 tqdm
 transformers
 wheel
-hf_xet
+wandb

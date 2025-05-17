@@ -1,96 +1,120 @@
-import os
-import torch
+from datasets import load_dataset
+from transformers.models.whisper import WhisperProcessor, \
+                                        WhisperForConditionalGeneration
+from transformers.training_args_seq2seq import Seq2SeqTrainingArguments
+from transformers.trainer_seq2seq import Seq2SeqTrainer
 import torchaudio
-from datasets import Dataset
-from transformers import WhisperProcessor, WhisperForConditionalGeneration, TrainingArguments, Trainer
-from Loader.cv_loader import Loader
+import torch
+from torch.nn.utils.rnn import pad_sequence
 
-class WhisperFinetuner:
-    def __init__(self, it_fraction: float, es_fraction: float, output_path: str, seed: int = 42):
-        self.loader = Loader(it_fraction, es_fraction, seed=seed)
-        self.output_path = output_path
-        self.device = "cuda" if torch.cuda.is_available() else "cpu"
-        self.model_name = "openai/whisper-small"
-        self.processor = WhisperProcessor.from_pretrained(self.model_name)
-        self.model = WhisperForConditionalGeneration.from_pretrained(self.model_name).to(self.device)
+class WhisperFineTuner:
+    def __init__(self, 
+                 dataset_url: str, 
+                 model_name: str = "openai/whisper-small", 
+                 language: str = "romanian", 
+                 task: str = "transcribe", 
+                 target_freq: int = 16_000):
+        print(f"Initializing fine tuner based on {dataset_url}...")
+        self.dataset_url = dataset_url
+        self.model_name = model_name
+        self.language = language
+        self.task = task
+        self.target_freq = target_freq
+
+        self.processor = WhisperProcessor.from_pretrained(model_name)
+        self.model = WhisperForConditionalGeneration.from_pretrained(model_name)
+        self.model.config.forced_decoder_ids = self.processor.get_decoder_prompt_ids(
+            language=language, task=task
+        )
+
+    def ensure_target_frequency(self, audio):
+        waveform = torch.tensor(audio["array"], dtype=torch.float32)
+        if audio.get('sampling_rate') != self.target_freq:
+            waveform = torchaudio.transforms.Resample(
+                orig_freq=audio.get('sampling_rate'),
+                new_freq=self.target_freq
+            )(waveform)
+        return waveform.numpy()
 
     def preprocess(self, batch):
-        audio = batch["audio"]
-        waveform = torch.tensor(audio["array"], dtype=torch.float32)
-        original_sr = audio["sampling_rate"]
+        audio = self.ensure_target_frequency(batch["audio"])
+        input_features = self.processor.feature_extractor(
+            audio, sampling_rate=self.target_freq
+        ).input_features[0]
+        labels = self.processor.tokenizer(batch["sentence"]).input_ids
 
-        if original_sr != 16000:
-            resampler = torchaudio.transforms.Resample(orig_freq=original_sr, new_freq=16000)
-            waveform = resampler(waveform)
-
-        inputs = self.processor(
-            waveform.numpy(),
-            sampling_rate=16000,
-            return_tensors="pt"
-        )
-        input_values = inputs.input_features.squeeze(0)
-        
-        labels = self.processor.tokenizer(
-            batch["sentence"],
-            return_tensors="pt"
-        ).input_ids.squeeze(0)
-        
         return {
-            "input_features": input_values,
+            "input_features": input_features,
             "labels": labels
         }
 
-    def prepare_dataset(self, data_list):
-        print("Preprocessing dataset for Whisper...")
-        processed = [self.preprocess(sample) for sample in data_list]
-        return Dataset.from_list(processed)
+    class Collator:
+        def __init__(self, processor):
+            self.processor = processor
 
-    def collate_fn(self, batch):
-        input_features = [torch.tensor(x["input_features"]) if not isinstance(x["input_features"], torch.Tensor) \
-                          else x["input_features"] for x in batch]
-        input_features = torch.stack(input_features)
-    
-        labels = torch.nn.utils.rnn.pad_sequence(
-            [torch.tensor(x["labels"]) if not isinstance(x["labels"], torch.Tensor) else x["labels"] for x in batch],
-            batch_first=True, padding_value=self.processor.tokenizer.pad_token_id
-        )
-        
-        labels[labels == self.processor.tokenizer.pad_token_id] = -100
-    
-        return {"input_features": input_features, "labels": labels}
+        def __call__(self, features):
+            input_features = [torch.tensor(f["input_features"]) for f in features]
+            label_ids = [f["labels"] for f in features]
 
+            input_features = pad_sequence(input_features, batch_first=True)
 
-    def train(self, n_samples: int = 10_000, num_train_epochs: int = 3, batch_size: int = 8):
-        print("Loading data...")
-        data = self.loader.load(n_samples)
-        
-        train_dataset = self.prepare_dataset(data["train"])
-        val_dataset = self.prepare_dataset(data["val"])
-        
-        args = TrainingArguments(
-            output_dir=self.output_path,
+            labels_batch = self.processor.tokenizer.pad(
+                {"input_ids": label_ids},
+                return_tensors="pt",
+                padding=True
+            )
+
+            return {
+                "input_features": input_features,
+                "labels": labels_batch["input_ids"]
+            }
+
+    def load_and_prepare_data(self):
+        print(f"Loading data...")
+        dataset = load_dataset(self.dataset_url)
+        dataset = dataset["train"].train_test_split(test_size=0.1)
+        dataset = dataset.map(self.preprocess, remove_columns=dataset["train"].column_names)
+        dataset.set_format(type="torch")
+
+        return dataset["train"], dataset["test"]
+
+    def train(self, output_dir, batch_size=8, epochs=3, push_to_hub=False):
+        print(f"Setting up training...")
+        hub_kwargs = {
+                "push_to_hub": True,
+                "hub_model_id": output_dir,
+                "hub_private_repo": False
+            } if push_to_hub else {}
+
+        train_dataset, eval_dataset = self.load_and_prepare_data()
+
+        training_args = Seq2SeqTrainingArguments(
+            output_dir=output_dir,
             per_device_train_batch_size=batch_size,
             per_device_eval_batch_size=batch_size,
-            num_train_epochs=num_train_epochs,
+            eval_strategy="epoch",
             save_strategy="epoch",
-            logging_dir=os.path.join(self.output_path, "logs"),
+            logging_steps=20,
+            num_train_epochs=epochs,
+            predict_with_generate=True,
             fp16=torch.cuda.is_available(),
-            save_total_limit=2,
-            push_to_hub=False
+            report_to="wandb",
+            **hub_kwargs
         )
 
-
-        print("Starting training...")
-        trainer = Trainer(
+        trainer = Seq2SeqTrainer(
             model=self.model,
-            args=args,
+            args=training_args,
             train_dataset=train_dataset,
-            eval_dataset=val_dataset,
-            processing_class=self.processor,
-            data_collator=self.collate_fn,
+            eval_dataset=eval_dataset,
+            tokenizer=self.processor.tokenizer,
+            data_collator=self.Collator(self.processor)
         )
 
+        print(f"Training begins...")
         trainer.train()
-        self.model.save_pretrained(self.output_path)
-        self.processor.save_pretrained(self.output_path)
-        print(f"Model saved to {self.output_path}")
+        self.model.save_pretrained(output_dir)
+        self.processor.save_pretrained(output_dir)
+        if push_to_hub:
+            print(f"Saving model...")
+            trainer.push_to_hub(output_dir)
