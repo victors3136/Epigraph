@@ -9,16 +9,16 @@ from Processor.Tokenizer.tokenizer import Tokenizer
 
 import re
 
-def truncate(text, max_len):
-    return text if len(text) <= max_len else text[:max_len - 1] + "…"
-
-COL_WIDTH = 18
+p2g = P2G("./Processor/DeepGraphemizer/p2g_romanian_model")
+lang_2_g2p_map = {}
 
 class Pipeline:
     def __init__(self, lang: SupportedLanguage):
         self.lang = lang
-        self.g2p = G2P(lang, "./Processor/DeepPhonemizer/g2p_latin_models/")
-        self.p2g = P2G("./Processor/DeepGraphemizer/p2g_romanian_model")
+        if lang not in lang_2_g2p_map.keys():
+            lang_2_g2p_map[lang] = G2P(lang, "./Processor/DeepPhonemizer/g2p_latin_models/")
+        self.g2p = lang_2_g2p_map[lang]
+        self.p2g = p2g
 
     def __call__(self, text: str) -> str:
         tokens = Tokenizer.apply(self.lang, text)

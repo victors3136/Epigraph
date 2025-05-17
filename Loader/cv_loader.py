@@ -6,8 +6,9 @@ from Processor.pipeline import Pipeline
 from Processor.Domain.supported_language import SupportedLanguage
 import uuid
 import shutil
+import json
 
-DatasetUrl = "mozilla-foundation/common_voice_13_0"
+DatasetUrl = "mozilla-foundation/common_voice_11_0"
 
 SampleInterface = Features({
     "audio": Audio(),
@@ -22,6 +23,26 @@ class SampleSimplifier:
 
 sample_simplifier = SampleSimplifier()
 
+def _get_cached_sample_count_by_key(dataset_path: str, key: str) -> int:
+    print(f"Reading metadata from {dataset_path}/meta.json for {key}")
+    meta_path = os.path.join(dataset_path, "meta.json")
+    if os.path.exists(meta_path):
+        with open(meta_path, "r") as f:
+            data = json.load(f)
+            return data.get(key, 0)
+    return 0
+
+def _write_sample_count_for_key(dataset_path: str, count: int, key: str):
+    print(f"Writing metadata in {dataset_path}/meta.json for {key}")
+    meta_path = os.path.join(dataset_path, "meta.json")
+    data = {}
+    if os.path.exists(meta_path):
+        with open(meta_path, "r") as f:
+            data = json.load(f)
+    data[key] = count
+    with open(meta_path, "w") as f:
+        json.dump(data, f)
+
 class IncrementalSampleSelector:
     @classmethod
     def force_write_dataset_to_disk(cls, data: Dataset, dataset_path: str):
@@ -30,7 +51,7 @@ class IncrementalSampleSelector:
         data.save_to_disk(temp_path)
         print(f"Removing dataset from {dataset_path}")
         shutil.rmtree(dataset_path)
-        print(f"Moving new dataset to {temp_path}")
+        print(f"Moving new dataset from {temp_path} to {dataset_path}")
         shutil.move(temp_path, dataset_path)
 
     @classmethod
@@ -47,13 +68,14 @@ class IncrementalSampleSelector:
 
         if os.path.exists(dataset_path):
             print(f"[{language_code}] Loading existing dataset from disk...")
-            existing_dataset = Dataset.load_from_disk(dataset_path)
+            existing_dataset = Dataset.load_from_disk(dataset_path, keep_in_memory=False)
+            existing_count = _get_cached_sample_count_by_key(output_dir, language_code)
         else:
             existing_dataset = Dataset.from_dict(
                 {"audio": [], "sentence": []},
-                features=SampleInterface
+                features=SampleInterface,
             )
-        existing_count = len(existing_dataset)
+            existing_count = 0
         remaining_count = required_count - existing_count
         if remaining_count <= 0:
             print(f"[{language_code}] Already have {existing_count} samples.")
@@ -63,9 +85,15 @@ class IncrementalSampleSelector:
         rand = random.Random(seed)
 
         print(f"[{language_code}] Streaming {remaining_count} new samples...")
+    
+        stream = load_dataset(DatasetUrl, language_code, split="train", streaming=True)
+    
         collected = []
-        iterator = load_dataset(DatasetUrl, language_code, split="train", streaming=True)
-        for entry in tqdm(iterator, desc=f"Filtering {language_code}"):
+        skipped = 0
+        for entry in tqdm(stream, desc=f"Filtering {language_code}"):
+            if skipped < existing_count:
+                skipped += 1
+                continue
             sample = sample_simplifier(entry)
             if sample is not None:
                 collected.append(sample)
@@ -74,21 +102,21 @@ class IncrementalSampleSelector:
 
         rand.shuffle(collected)
 
-        print(f"[{language_code}] Phonetically converting...")
+        print(f"[{language_code}] Phonetically converting {len(collected)} samples...")
         for sample in tqdm(collected, desc=f"Converting {language_code}"):
             sample["sentence"] = pipeline(sample["sentence"])
 
-        new_dataset = Dataset.from_list(collected, features=existing_dataset.features)
-
+        new_dataset = Dataset.from_list(collected, features=SampleInterface)
         combined_dataset = concatenate_datasets([existing_dataset, new_dataset])
-        print("Saving to disk ...")
+
+        print(f"[{language_code}] Saving updated dataset with {len(combined_dataset)} total samples...")
         try:
             combined_dataset.save_to_disk(dataset_path)
-            print(f"[{language_code}] Updated dataset saved with {len(combined_dataset)} samples.")
         except PermissionError:
-            print(f"Failed to save to {dataset_path} due to an older version of this dataset beign already present...")
+            print(f"[{language_code}] Permission error during save. Using fallback strategy.")
             cls.force_write_dataset_to_disk(combined_dataset, dataset_path)
 
+        _write_sample_count_for_key(output_dir, len(combined_dataset), language_code)
 
         return combined_dataset.select(range(required_count))
 
@@ -103,41 +131,47 @@ class Loader:
         self.spanish_pipeline = Pipeline(SupportedLanguage.Spanish)
         self.random = random.Random(seed)
 
-    def _load_romanian_data(self, count: int, output_dir: str = "preprocessed_datasets") -> Dataset:
+    def _load_romanian_data(self, count: int, output_dir: str = "preprocessed_datasets") -> list:
         dataset_path = os.path.join(output_dir, "ro")
         os.makedirs(output_dir, exist_ok=True)
+
+        existing_count = 0
+        collected = []
 
         if os.path.exists(dataset_path):
             print("[ro] Loading cached Romanian samples from disk...")
             existing_dataset = Dataset.load_from_disk(dataset_path)
-            existing_count = len(existing_dataset)
-            if len(existing_dataset) >= count:
-                return existing_dataset.select(range(count)).to_list()
-
-            print(f"[ro] Found only {existing_count} samples, need {count}. Fetching more...")
-
-            remaining_count = count - existing_count
+            existing_count = _get_cached_sample_count_by_key(output_dir, "ro")
             collected = existing_dataset.to_list()
+
+            if existing_count >= count:
+                print(f"[ro] Already have {existing_count} samples.")
+                return collected[:count]
+
+            print(f"[ro] Found {existing_count}, need {count}. Fetching {count - existing_count} more...")
+
         else:
             print("[ro] No cached Romanian dataset found. Starting fresh.")
-            collected = []
-            existing_count = 0
-            remaining_count = count
 
-        print(f"[ro] Streaming {remaining_count} new samples...")
-        iterator = load_dataset(DatasetUrl, "ro", split="train", streaming=False).select(range(existing_count, count))
-        for sample in tqdm(iterator, desc="Collecting Romanian samples"):
-            simplified = sample_simplifier(sample)
+        print(f"[ro] Streaming {count - existing_count} new samples...")
+        stream = load_dataset(DatasetUrl, "ro", split="train", streaming=True)
+
+        skipped = 0
+        for entry in tqdm(stream, desc="Collecting Romanian samples"):
+            if skipped < existing_count:
+                skipped += 1
+                continue
+            simplified = sample_simplifier(entry)
             if simplified is not None:
                 collected.append(simplified)
                 if len(collected) >= count:
                     break
 
-        print("[ro] Saving Romanian dataset to disk...")
+        print(f"[ro] Saving Romanian dataset with {len(collected)} samples to disk...")
         Dataset.from_list(collected, features=SampleInterface).save_to_disk(dataset_path)
+        _write_sample_count_for_key(output_dir, len(collected), "ro")
 
-        return collected
-
+        return collected[:count]
 
     def _split_romanian_data(self, data: list) -> tuple[Dataset, Dataset, Dataset]:
         val_size = int(0.1 * len(data))
@@ -147,7 +181,9 @@ class Loader:
         test_set = data[val_size:val_size + test_size]
         training_set = data[val_size + test_size:]
 
-        return training_set, validation_set, test_set
+        return Dataset.from_list(training_set, features=SampleInterface), \
+               Dataset.from_list(validation_set, features=SampleInterface), \
+               Dataset.from_list(test_set, features=SampleInterface)
 
 
     def _load_augmented_data(self, train_size: int, output_dir: str = "preprocessed_datasets") -> Dataset:
@@ -161,7 +197,7 @@ class Loader:
             it_count,
             seed=self.random.randint(0, 10_000),
             output_dir=output_dir
-        ).to_list()
+        )
 
         print("Loading Spanish data...")
         spanish_data = IncrementalSampleSelector.select(
@@ -170,11 +206,12 @@ class Loader:
             es_count,
             seed=self.random.randint(0, 10_000),
             output_dir=output_dir
-        ).to_list()
+        )
 
-        return italian_data + spanish_data
+        return concatenate_datasets([italian_data, spanish_data])
 
     def _build_dataset(self, train, val, test) -> DatasetDict:
+        print("Running some sanity checks...")
         assert all(sample is not None for sample in train), "Training set contains None samples!"
         assert all(sample is not None for sample in val), "Validation set contains None samples!"
         assert all(sample is not None for sample in test), "Test set contains None samples!"
@@ -194,13 +231,10 @@ class Loader:
     def load(self, romanian_sample_count: int = 10_000, output_dir: str="preprocessed_datasets") -> DatasetDict:
         romanian_data = self._load_romanian_data(romanian_sample_count)
         romanian_training_split, validation_split, testing_split = self._split_romanian_data(romanian_data)
-        augmented_data = self._load_augmented_data(len(romanian_training_split), output_dir=output_dir)
-        train = romanian_training_split + augmented_data
+        augmented_data = self._load_augmented_data(len(romanian_training_split), output_dir=output_dir).to_list()
+        train = concatenate_datasets([romanian_training_split, augmented_data]).to_list()
 
-        print("Shuffling training data set...")
-        self.random.shuffle(train)
-
-        return self._build_dataset(train, validation_split, testing_split)
+        return Dataset.from_list(self._build_dataset(train, validation_split, testing_split))
 
     @classmethod
     def cleanup(cls, dir_name: str):
