@@ -1,1 +1,0 @@
-git add $(git status --porcelain | grep -v "__pycache__" | grep -ve "^D" | grep -v "models"| awk '{print $2}')
