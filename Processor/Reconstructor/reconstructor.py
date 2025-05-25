@@ -31,10 +31,10 @@ class Reconstructor:
                 )
     
     @classmethod
-    def apply(cls, baseDoc: Doc, graphemes: list[str]) -> str:
+    def apply(cls, base_doc: Doc, graphemes: list[str]) -> str:
         out_words = []
         grapheme_iter = iter(graphemes)
-        for token in baseDoc:
+        for token in base_doc:
             if re.match(r"^\w+$", token.text):
                 new_word = next(grapheme_iter)
 

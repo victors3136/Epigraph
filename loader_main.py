@@ -21,7 +21,7 @@ if __name__ == "__main__":
     print(f"Test size: {len(dataset['test'])}")
 
     for split in ["train", "val", "test"]:
-        for sample in dataset[split].select(range(min(5, len(dataset[split])))):
+        for sample in dataset[split][:min(5, len(dataset[split]))]:
             assert "audio" in sample and "sentence" in sample, f"Sample missing fields in {split}"
             assert isinstance(sample["sentence"], str), f"Sentence must be string in {split}"
             assert isinstance(sample["audio"], dict), f"Audio must be dict (decoded) in {split}"
@@ -32,15 +32,15 @@ if __name__ == "__main__":
 
 
     print("\nRe-Loading dataset (checking if we can skip reprocessing)...")
-    dataset = loader.load(romanian_sample_count=100, output_dir=cache_dir)
+    _ = loader.load(romanian_sample_count=100, output_dir=cache_dir)
 
     print("\nLoading slightly larger dataset (checking if we can skip some reprocessing)...")
-    dataset = loader.load(romanian_sample_count=200, output_dir=cache_dir)
+    _ = loader.load(romanian_sample_count=200, output_dir=cache_dir)
 
 
     print("\nWe don't want to remove any already present data if we request less than is available :)")
-    dataset = loader.load(romanian_sample_count=50, output_dir=cache_dir)
-    dataset = loader.load(romanian_sample_count=100, output_dir=cache_dir)
+    _ = loader.load(romanian_sample_count=50, output_dir=cache_dir)
+    _ = loader.load(romanian_sample_count=100, output_dir=cache_dir)
 
     print("\nCleaning up test cache directory...")
     Loader.cleanup(cache_dir)
@@ -122,7 +122,7 @@ if __name__ == "__main__":
     [it] Phonetically converting...
     Converting it: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 16/16 [00:05<00:00,  3.19it/s]
     Saving to disk ...
-    Failed to save to 6ffae50b-e5b0-442e-8e74-00bf9d3589e6/it due to an older version of this dataset beign already present...
+    Failed to save to 6ffae50b-e5b0-442e-8e74-00bf9d3589e6/it due to an older version of this dataset being already present...
     Saving dataset temporarily to 6ffae50b-e5b0-442e-8e74-00bf9d3589e6/it_tmp_ed6d444f-106e-41ec-be71-c961ad02661c
     Saving the dataset (1/1 shards): 100%|█████████████████████████████████████████████████████████████████████████████████████████████████| 32/32 [00:00<00:00, 2511.00 examples/s]
     Removing dataset from 6ffae50b-e5b0-442e-8e74-00bf9d3589e6/it
@@ -136,7 +136,7 @@ if __name__ == "__main__":
     [es] Phonetically converting...
     Converting es: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 16/16 [00:05<00:00,  2.89it/s]
     Saving to disk ...
-    Failed to save to 6ffae50b-e5b0-442e-8e74-00bf9d3589e6/es due to an older version of this dataset beign already present...
+    Failed to save to 6ffae50b-e5b0-442e-8e74-00bf9d3589e6/es due to an older version of this dataset being already present...
     Saving dataset temporarily to 6ffae50b-e5b0-442e-8e74-00bf9d3589e6/es_tmp_610ab855-65bd-4709-b34d-0813705db1ef
     Saving the dataset (1/1 shards): 100%|█████████████████████████████████████████████████████████████████████████████████████████████████| 32/32 [00:00<00:00, 3331.95 examples/s]
     Removing dataset from 6ffae50b-e5b0-442e-8e74-00bf9d3589e6/es

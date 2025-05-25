@@ -48,7 +48,7 @@ class Phonemizer:
 
         single_input_string = isinstance(text, str)
         texts = [text] if single_input_string else text
-        result = self.phonemise_list(texts=texts, lang=lang,
+        result = self.phonemize_list(texts=texts, lang=lang,
                                      punctuation=punctuation, expand_acronyms=expand_acronyms)
 
         phoneme_lists = [''.join(phoneme_list) for phoneme_list in result.phonemes]
@@ -58,7 +58,7 @@ class Phonemizer:
         else:
             return phoneme_lists
 
-    def phonemise_list(self,
+    def phonemize_list(self,
                        texts: List[str],
                        lang: str,
                        punctuation: str = DEFAULT_PUNCTUATION,

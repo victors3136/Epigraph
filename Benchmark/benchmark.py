@@ -1,11 +1,10 @@
-import os
+import torch
+import torchaudio
 from datasets import load_dataset
 from jiwer import wer, cer
-from transformers.models.auto.processing_auto import AutoProcessor
-from transformers.models.auto.modeling_auto import AutoModelForSpeechSeq2Seq
-import torchaudio
-import torch
 from tqdm import tqdm
+from transformers.models.auto.modeling_auto import AutoModelForSpeechSeq2Seq
+from transformers.models.auto.processing_auto import AutoProcessor
 
 MODEL_PATHS = []
 LANGUAGE = "ro"
@@ -18,11 +17,13 @@ dataset = load_dataset("mozilla-foundation/common_voice_11_0", LANGUAGE, split=S
 dataset = dataset.filter(lambda x: x["sentence"] is not None and x["audio"] is not None)
 dataset = dataset.select(range(min(MAX_SAMPLES, len(dataset))))
 
+
 def speech_file_to_array_fn(batch):
     speech_array, _ = torchaudio.load(batch["audio"]["path"])
     batch["speech"] = speech_array[0].numpy()
     batch["target_text"] = batch["sentence"].lower()
     return batch
+
 
 dataset = dataset.map(speech_file_to_array_fn)
 
@@ -35,7 +36,7 @@ for model_id in MODEL_PATHS:
 
     processor = AutoProcessor.from_pretrained(model_id)
     model = AutoModelForSpeechSeq2Seq.from_pretrained(model_id) \
-                                     .to(DEVICE)
+        .to(DEVICE)
 
     predictions = []
     references = []
@@ -67,11 +68,10 @@ for model_id in MODEL_PATHS:
     print(f"{model_id}: WER = {wer_score:.2f}%, CER = {cer_score:.2f}%")
     results.append((model_id, wer_score, cer_score))
 
-
 results.sort(key=lambda x: (
-    x[1], # sort by wer by default
-    x[2]) # use cer as tiebreaker
-)
+    x[1],  # sort by wer by default
+    x[2])  # use cer as tiebreaker
+             )
 
 print("\nFinal Benchmark Results:")
 print(f"{'Model':<60} {'WER (%)':<10} {'CER (%)':<10}")

@@ -99,12 +99,12 @@ class Predictor:
             input_batch = pad_sequence(sequences=input_batch,
                                        batch_first=True, padding_value=0)
             lens_batch = torch.stack(lens_batch)
-            start_indx = self.phoneme_tokenizer.get_start_index(language)
-            start_inds = torch.tensor([start_indx]*input_batch.size(0)).to(input_batch.device)
+            start_index = self.phoneme_tokenizer.get_start_index(language)
+            start_indices = torch.tensor([start_index]*input_batch.size(0)).to(input_batch.device)
             batch = {
                 'text': input_batch,
                 'text_len': lens_batch,
-                'start_index': start_inds
+                'start_index': start_indices
             }
             with torch.no_grad():
                 output_batch, probs_batch = self.model.generate(batch)

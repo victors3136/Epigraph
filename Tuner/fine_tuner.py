@@ -1,18 +1,19 @@
 from datasets import load_dataset
 from transformers.models.whisper import WhisperProcessor, \
-                                        WhisperForConditionalGeneration
+    WhisperForConditionalGeneration
 from transformers.training_args_seq2seq import Seq2SeqTrainingArguments
 from transformers.trainer_seq2seq import Seq2SeqTrainer
 import torchaudio
 import torch
 from torch.nn.utils.rnn import pad_sequence
 
+
 class WhisperFineTuner:
-    def __init__(self, 
-                 dataset_url: str, 
-                 model_name: str = "openai/whisper-small", 
-                 language: str = "romanian", 
-                 task: str = "transcribe", 
+    def __init__(self,
+                 dataset_url: str,
+                 model_name: str = "openai/whisper-small",
+                 language: str = "romanian",
+                 task: str = "transcribe",
                  target_freq: int = 16_000):
         print(f"Initializing fine tuner based on {dataset_url}...")
         self.dataset_url = dataset_url
@@ -81,10 +82,10 @@ class WhisperFineTuner:
     def train(self, output_dir, batch_size=8, epochs=3, push_to_hub=False):
         print(f"Setting up training...")
         hub_kwargs = {
-                "push_to_hub": True,
-                "hub_model_id": output_dir,
-                "hub_private_repo": False
-            } if push_to_hub else {}
+            "push_to_hub": True,
+            "hub_model_id": output_dir,
+            "hub_private_repo": False
+        } if push_to_hub else {}
 
         train_dataset, eval_dataset = self.load_and_prepare_data()
 
@@ -111,10 +112,10 @@ class WhisperFineTuner:
             data_collator=self.Collator(self.processor)
         )
 
-        print(f"Training begins...")
+        print("Training begins...")
         trainer.train()
         self.model.save_pretrained(output_dir)
         self.processor.save_pretrained(output_dir)
         if push_to_hub:
-            print(f"Saving model...")
+            print("Saving model...")
             trainer.push_to_hub(output_dir)

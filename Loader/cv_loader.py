@@ -44,8 +44,8 @@ def _write_sample_count_for_key(dataset_path: str, count: int, key: str):
         json.dump(data, f)
 
 class IncrementalSampleSelector:
-    @classmethod
-    def force_write_dataset_to_disk(cls, data: Dataset, dataset_path: str):
+    @staticmethod
+    def force_write_dataset_to_disk(data: Dataset, dataset_path: str):
         temp_path = dataset_path + "_tmp_" + str(uuid.uuid4())
         print(f"Saving dataset temporarily to {temp_path}")
         data.save_to_disk(temp_path)
@@ -54,9 +54,8 @@ class IncrementalSampleSelector:
         print(f"Moving new dataset from {temp_path} to {dataset_path}")
         shutil.move(temp_path, dataset_path)
 
-    @classmethod
+    @staticmethod
     def select(
-        cls,
         language_code: str,
         pipeline: Pipeline,
         required_count: int,
@@ -114,7 +113,7 @@ class IncrementalSampleSelector:
             combined_dataset.save_to_disk(dataset_path)
         except PermissionError:
             print(f"[{language_code}] Permission error during save. Using fallback strategy.")
-            cls.force_write_dataset_to_disk(combined_dataset, dataset_path)
+            IncrementalSampleSelector.force_write_dataset_to_disk(combined_dataset, dataset_path)
 
         _write_sample_count_for_key(output_dir, len(combined_dataset), language_code)
 
@@ -131,7 +130,8 @@ class Loader:
         self.spanish_pipeline = Pipeline(SupportedLanguage.Spanish)
         self.random = random.Random(seed)
 
-    def _load_romanian_data(self, count: int, output_dir: str = "preprocessed_datasets") -> list:
+    @staticmethod
+    def _load_romanian_data(count: int, output_dir: str = "preprocessed_datasets") -> list:
         dataset_path = os.path.join(output_dir, "ro")
         os.makedirs(output_dir, exist_ok=True)
 
@@ -173,7 +173,8 @@ class Loader:
 
         return collected[:count]
 
-    def _split_romanian_data(self, data: list) -> tuple[Dataset, Dataset, Dataset]:
+    @staticmethod
+    def _split_romanian_data(data: list) -> tuple[Dataset, Dataset, Dataset]:
         val_size = int(0.1 * len(data))
         test_size = int(0.1 * len(data))
 
@@ -210,7 +211,8 @@ class Loader:
 
         return concatenate_datasets([italian_data, spanish_data])
 
-    def _build_dataset(self, train, val, test) -> DatasetDict:
+    @staticmethod
+    def _build_dataset(train, val, test) -> DatasetDict:
         print("Running some sanity checks...")
         assert all(sample is not None for sample in train), "Training set contains None samples!"
         assert all(sample is not None for sample in val), "Validation set contains None samples!"
@@ -228,15 +230,15 @@ class Loader:
         print(f"Final sizes — Train: {len(dataset['train'])}, Val: {len(dataset['val'])}, Test: {len(dataset['test'])}")
         return dataset
 
-    def load(self, romanian_sample_count: int = 10_000, output_dir: str="preprocessed_datasets") -> DatasetDict:
+    def load(self, romanian_sample_count: int = 10_000, output_dir: str="preprocessed_datasets") -> Dataset:
         romanian_data = self._load_romanian_data(romanian_sample_count)
         romanian_training_split, validation_split, testing_split = self._split_romanian_data(romanian_data)
         augmented_data = self._load_augmented_data(len(romanian_training_split), output_dir=output_dir).to_list()
         train = concatenate_datasets([romanian_training_split, augmented_data]).to_list()
 
-        return Dataset.from_list(self._build_dataset(train, validation_split, testing_split))
+        return Dataset.from_dict(self._build_dataset(train, validation_split, testing_split))
 
-    @classmethod
-    def cleanup(cls, dir_name: str):
+    @staticmethod
+    def cleanup(dir_name: str):
         print(f"Cleaning {dir_name} up...")
         shutil.rmtree(dir_name, ignore_errors=True)

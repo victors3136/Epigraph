@@ -70,7 +70,7 @@ def unpickle_binary(file: Union[str, Path]) -> object:
     Unpickles a given binary file to an object
 
     Args:
-        file (nion[str, Path]): Path to the file.
+        file (Union[str, Path]): Path to the file.
 
     Returns:
         object: Unpickled object.
@@ -83,7 +83,7 @@ def unpickle_binary(file: Union[str, Path]) -> object:
 
 def to_device(batch: Dict[str, torch.Tensor], device: torch.device) -> Dict[str, torch.Tensor]:
     """
-    Sends a batch of data to the given torch devicee (cpu or cuda).
+    Sends a batch of data to the given torch device (cpu or cuda).
 
     Args:
         batch (Dict[str, torch.Tensor]): Batch to be sent to the device.

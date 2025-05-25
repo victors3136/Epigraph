@@ -12,6 +12,7 @@ class PhonemeMap:
                 return ItalianPhonemeMapper
             case SupportedLanguage.Spanish:
                 return SpanishPhonemeMapper
+        return None
 
     @classmethod
     def apply(cls, language: SupportedLanguage, phoneme: str | list[str]) -> str | list[str]:

@@ -4,7 +4,7 @@ from Processor.DeepPhonemizer.grapheme2phoneme_converter import Grapheme2Phoneme
 if __name__ == "__main__":
     it = Grapheme2PhonemeConverter(SupportedLanguage.Italian)
 
-    print(it("ciao"))
+    print(it(["ciao"]))
 
     print(it(["georgiana", "arrivederci"]))
 
@@ -16,9 +16,9 @@ if __name__ == "__main__":
 
     es = Grapheme2PhonemeConverter(SupportedLanguage.Spanish)
 
-    print(es("churros"))
+    print(es(["churros"]))
 
-    print(es("guarroces"))
+    print(es(["guarroces"]))
 
     print(es(["me", "llamo", "charli"]))
 
